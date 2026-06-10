@@ -4,6 +4,8 @@ using SetlistSocial.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+const string DevelopmentCorsPolicy = "DevelopmentFrontend";
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -12,10 +14,25 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(DevelopmentCorsPolicy, policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors(DevelopmentCorsPolicy);
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

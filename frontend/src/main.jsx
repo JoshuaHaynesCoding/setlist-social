@@ -1,34 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import App from './App.jsx';
 import './styles.css';
-
-function Home() {
-  return (
-    <main className="app-shell">
-      <h1>Setlist Social</h1>
-      <p>Frontend starter is ready.</p>
-      <Link to="/about">About</Link>
-    </main>
-  );
-}
-
-function About() {
-  return (
-    <main className="app-shell">
-      <h1>About</h1>
-      <p>React Router is installed and configured.</p>
-      <Link to="/">Home</Link>
-    </main>
-  );
-}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/" element={<App />}>
+          <Route index element={<App.LandingPage />} />
+          <Route path="about" element={<App.AboutPage />} />
+          <Route path="stats" element={<App.StatsPage />} />
+          <Route path="artists" element={<App.ArtistsPage />} />
+          <Route path="activity" element={<App.ActivityPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
