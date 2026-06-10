@@ -7,8 +7,8 @@ React + Vite + JavaScript public frontend for Setlist Social.
 - `/` - landing page
 - `/about` - about page
 - `/stats` - community stats from the backend
-- `/artists` - public artists placeholder
-- `/activity` - public activity placeholder
+- `/artists` - public artists from the backend
+- `/activity` - recent public activity from the backend
 
 ## Run Frontend And Backend Together
 
@@ -39,13 +39,13 @@ Open:
 http://localhost:5173
 ```
 
-The stats page calls:
+The public data pages call:
 
-```text
-http://localhost:5050/api/public/stats
-```
+- `http://localhost:5050/api/public/stats`
+- `http://localhost:5050/api/public/artists`
+- `http://localhost:5050/api/public/activity`
 
-If the backend is not running, `/stats` shows an error state.
+If the backend is not running, these pages show an error state.
 
 ## Not Implemented Yet
 

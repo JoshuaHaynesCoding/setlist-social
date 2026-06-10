@@ -59,6 +59,77 @@ app.MapGet("/api/public/stats", async (AppDbContext db) =>
     .WithName("PublicStats")
     .WithTags("Public");
 
+app.MapGet("/api/public/artists", async (AppDbContext db) =>
+{
+    var artists = await db.Artists
+        .AsNoTracking()
+        .Select(artist => new
+        {
+            artist.Id,
+            artist.Name,
+            ConcertCount = artist.Concerts.Count,
+            ReviewCount = artist.Concerts.SelectMany(concert => concert.Reviews).Count(),
+            Concerts = artist.Concerts
+                .Select(concert => new
+                {
+                    concert.Title,
+                    concert.VenueName,
+                    concert.City,
+                    concert.Region,
+                    concert.ConcertDate
+                })
+                .ToList()
+        })
+        .ToListAsync();
+
+    var artistDtos = artists
+        .OrderBy(artist => artist.Name)
+        .Select(artist => new
+        {
+            artist.Id,
+            artist.Name,
+            artist.ConcertCount,
+            artist.ReviewCount,
+            LatestConcert = artist.Concerts
+                .OrderByDescending(concert => concert.ConcertDate)
+                .FirstOrDefault()
+        })
+        .ToList();
+
+    return Results.Ok(artistDtos);
+})
+    .WithName("PublicArtists")
+    .WithTags("Public");
+
+app.MapGet("/api/public/activity", async (AppDbContext db) =>
+{
+    var activity = await db.ActivityEvents
+        .AsNoTracking()
+        .Select(activityEvent => new
+        {
+            activityEvent.Id,
+            activityEvent.EventType,
+            activityEvent.Summary,
+            activityEvent.CreatedAt,
+            UserDisplayName = activityEvent.UserProfile == null
+                ? null
+                : activityEvent.UserProfile.DisplayName,
+            ConcertTitle = activityEvent.Concert == null
+                ? null
+                : activityEvent.Concert.Title
+        })
+        .ToListAsync();
+
+    var activityDtos = activity
+        .OrderByDescending(activityEvent => activityEvent.CreatedAt)
+        .Take(25)
+        .ToList();
+
+    return Results.Ok(activityDtos);
+})
+    .WithName("PublicActivity")
+    .WithTags("Public");
+
 if (app.Environment.IsDevelopment())
 {
     app.MapPost("/api/dev/seed", async (AppDbContext db) =>

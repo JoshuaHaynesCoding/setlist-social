@@ -208,7 +208,9 @@ select {
 
 .info-block,
 .state-panel,
-.stat-card {
+.stat-card,
+.data-card,
+.activity-card {
   background: #ffffff;
   border: 1px solid #dde3ee;
   border-radius: 8px;
@@ -227,6 +229,106 @@ select {
   gap: 16px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 8px;
+}
+
+.card-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.data-card {
+  display: grid;
+  gap: 18px;
+}
+
+.data-card h2 {
+  color: #111827;
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+.card-kicker {
+  color: #b23a48;
+  font-size: 0.76rem;
+  font-weight: 900;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.metric-row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.metric-row div {
+  background: #f6f7fb;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.metric-row dt {
+  color: #637085;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.metric-row dd {
+  color: #111827;
+  font-size: 1.45rem;
+  font-weight: 900;
+  margin: 4px 0 0;
+}
+
+.card-detail {
+  color: #5b687a;
+  margin: 0;
+}
+
+.activity-list {
+  display: grid;
+  gap: 12px;
+}
+
+.activity-card {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: auto 1fr;
+}
+
+.activity-marker {
+  background: #b23a48;
+  border-radius: 999px;
+  height: 12px;
+  margin-top: 7px;
+  width: 12px;
+}
+
+.activity-heading {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.activity-heading span {
+  color: #111827;
+  font-weight: 900;
+}
+
+.activity-heading time {
+  color: #637085;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.activity-card p {
+  color: #172033;
+  margin: 6px 0 0;
 }
 
 .stat-label {
@@ -296,6 +398,10 @@ select {
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 520px) {
@@ -317,6 +423,10 @@ select {
   }
 
   .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-grid {
     grid-template-columns: 1fr;
   }
 }
