@@ -67,6 +67,14 @@ Seed local development data:
 curl -X POST http://localhost:5050/api/dev/seed
 ```
 
+The seed endpoint is only mapped in the `Development` environment. It creates a small sample dataset with 3 users, 5 artists, 5 concerts, 5 reviews, 3 wishlist items, several activity events, and several tags.
+
+If any app data already exists, the endpoint returns `already-seeded` and does not create duplicates. Check the current database counts with:
+
+```bash
+curl http://localhost:5050/api/public/stats
+```
+
 ## Not Implemented Yet
 
 - OAuth / OIDC authentication
