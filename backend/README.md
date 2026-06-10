@@ -1,0 +1,76 @@
+# Setlist Social Backend
+
+ASP.NET Core Minimal API targeting .NET 10.
+
+## Current Features
+
+- Swagger/OpenAPI
+- Public health endpoint: `GET /api/health`
+- EF Core `AppDbContext`
+- SQLite provider for local development
+- PostgreSQL provider installed for planned production database support
+- Initial domain models and relationships
+- Public stats endpoint: `GET /api/public/stats`
+- Development-only seed endpoint: `POST /api/dev/seed`
+
+## Local Database
+
+Local development uses SQLite through `appsettings.Development.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=setlist-social-dev.db"
+  }
+}
+```
+
+The `.db` file is ignored by Git and should not be committed.
+
+## Migration Commands
+
+Run from the `backend/` folder:
+
+```bash
+dotnet restore
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
+
+If `dotnet ef` is not installed globally:
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+## Run Locally
+
+```bash
+dotnet run
+```
+
+Health check:
+
+```bash
+curl http://localhost:5050/api/health
+```
+
+Public stats:
+
+```bash
+curl http://localhost:5050/api/public/stats
+```
+
+Seed local development data:
+
+```bash
+curl -X POST http://localhost:5050/api/dev/seed
+```
+
+## Not Implemented Yet
+
+- OAuth / OIDC authentication
+- Last.fm integration
+- SignalR
+- Production PostgreSQL configuration
+- Frontend UI for these backend features
