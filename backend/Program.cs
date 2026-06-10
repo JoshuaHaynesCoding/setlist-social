@@ -434,6 +434,7 @@ app.MapPut("/api/me/concerts/{id:int}", async (
         concert.CreatedAt,
         concert.UpdatedAt));
 })
+    .RequireAuthorization()
     .WithName("UpdateMeConcert")
     .WithTags("My Concerts");
 
@@ -461,6 +462,7 @@ app.MapDelete("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal princi
 
     return Results.NoContent();
 })
+    .RequireAuthorization()
     .WithName("DeleteMeConcert")
     .WithTags("My Concerts");
 

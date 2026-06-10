@@ -49,6 +49,7 @@ export default function MyConcertsPage() {
   const [formError, setFormError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteSuccessId, setDeleteSuccessId] = useState(null);
 
   const isEditing = useMemo(() => editingId !== null, [editingId]);
 
@@ -162,8 +163,13 @@ export default function MyConcertsPage() {
   }
 
   async function deleteConcert(concertId) {
+    if (!window.confirm('Are you sure you want to delete this concert?')) {
+      return;
+    }
+
     setDeletingId(concertId);
     setFormError('');
+    setDeleteSuccessId(null);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/me/concerts/${concertId}`, {
@@ -184,7 +190,9 @@ export default function MyConcertsPage() {
         resetForm();
       }
 
+      setDeleteSuccessId(concertId);
       await loadConcerts();
+      setTimeout(() => setDeleteSuccessId(null), 2000);
     } catch {
       setFormError('Could not delete this concert.');
     } finally {
@@ -262,7 +270,17 @@ export default function MyConcertsPage() {
           </label>
         </div>
 
-        {formError ? <p className="form-error">{formError}</p> : null}
+        {formError ? (
+          <p className="form-error" role="alert" aria-live="polite">
+            {formError}
+          </p>
+        ) : null}
+
+        {deleteSuccessId ? (
+          <p className="form-success" role="status" aria-live="polite">
+            Concert deleted successfully.
+          </p>
+        ) : null}
 
         <button className="button primary-button" disabled={isSaving} type="submit">
           {isSaving ? 'Saving...' : isEditing ? 'Save changes' : 'Create concert'}
