@@ -1,3 +1,8 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SetlistSocial.Api.Data;
 using SetlistSocial.Api.Models;
@@ -20,10 +25,62 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "setlist_social_auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+
+        options.Events.OnRedirectToLogin = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            }
+
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
+
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return Task.CompletedTask;
+            }
+
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Google:ClientId"] ?? string.Empty;
+        options.ClientSecret = builder.Configuration["Google:ClientSecret"] ?? string.Empty;
+
+        // Keep Google tokens out of the auth cookie; the app only needs identity claims for now.
+        options.SaveTokens = false;
+
+        // Google handles this internal callback, then redirects to /api/auth/callback.
+        options.CallbackPath = "/api/auth/google-callback";
+    });
+
+builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -37,9 +94,119 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok" }))
     .WithName("Health")
     .WithTags("Health");
+
+app.MapGet("/api/auth/login", (IConfiguration configuration) =>
+{
+    var googleClientId = configuration["Google:ClientId"];
+    var googleClientSecret = configuration["Google:ClientSecret"];
+
+    if (string.IsNullOrWhiteSpace(googleClientId) || string.IsNullOrWhiteSpace(googleClientSecret))
+    {
+        return Results.Problem(
+            title: "Google OAuth is not configured.",
+            detail: "Set Google__ClientId and Google__ClientSecret before starting the login flow.",
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+
+    return Results.Challenge(
+        new AuthenticationProperties { RedirectUri = "/api/auth/callback" },
+        [GoogleDefaults.AuthenticationScheme]);
+})
+    .WithName("AuthLogin")
+    .WithTags("Auth");
+
+app.MapGet("/api/auth/callback", async (
+    ClaimsPrincipal principal,
+    AppDbContext db,
+    IConfiguration configuration) =>
+{
+    if (principal.Identity?.IsAuthenticated != true)
+    {
+        return Results.Unauthorized();
+    }
+
+    var oauthSubject = GetOAuthSubject(principal);
+
+    if (oauthSubject is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var displayName = GetDisplayName(principal);
+    var userProfile = await db.UserProfiles
+        .SingleOrDefaultAsync(user => user.OAuthSubject == oauthSubject);
+
+    if (userProfile is null)
+    {
+        userProfile = new UserProfile
+        {
+            DisplayName = displayName,
+            OAuthSubject = oauthSubject
+        };
+
+        db.UserProfiles.Add(userProfile);
+    }
+    else
+    {
+        userProfile.DisplayName = displayName;
+    }
+
+    await db.SaveChangesAsync();
+
+    var frontendUrl = configuration["FrontendUrl"] ?? "http://localhost:5173";
+    return Results.Redirect(frontendUrl);
+})
+    .RequireAuthorization()
+    .WithName("AuthCallback")
+    .WithTags("Auth");
+
+app.MapPost("/api/auth/logout", async (HttpContext context) =>
+{
+    await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    return Results.Ok(new { status = "signed-out" });
+})
+    .WithName("AuthLogout")
+    .WithTags("Auth");
+
+app.MapGet("/api/me", async (ClaimsPrincipal principal, AppDbContext db) =>
+{
+    if (principal.Identity?.IsAuthenticated != true)
+    {
+        return Results.Unauthorized();
+    }
+
+    var oauthSubject = GetOAuthSubject(principal);
+
+    if (oauthSubject is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var userProfile = await db.UserProfiles
+        .AsNoTracking()
+        .Where(user => user.OAuthSubject == oauthSubject)
+        .Select(user => new
+        {
+            user.Id,
+            user.DisplayName,
+            user.Bio,
+            user.CreatedAt,
+            user.UpdatedAt
+        })
+        .SingleOrDefaultAsync();
+
+    return userProfile is null
+        ? Results.Unauthorized()
+        : Results.Ok(userProfile);
+})
+    .WithName("Me")
+    .WithTags("Auth");
 
 app.MapGet("/api/public/stats", async (AppDbContext db) =>
 {
@@ -325,3 +492,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.Run();
+
+static string? GetOAuthSubject(ClaimsPrincipal principal)
+{
+    return principal.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+static string GetDisplayName(ClaimsPrincipal principal)
+{
+    return principal.FindFirstValue(ClaimTypes.Name)
+        ?? principal.FindFirstValue(ClaimTypes.Email)
+        ?? "Setlist Social User";
+}

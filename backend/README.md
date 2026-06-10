@@ -12,6 +12,8 @@ ASP.NET Core Minimal API targeting .NET 10.
 - Initial domain models and relationships
 - Public stats endpoint: `GET /api/public/stats`
 - Development-only seed endpoint: `POST /api/dev/seed`
+- Google OAuth/OIDC foundation with cookie authentication
+- Current user endpoint: `GET /api/me`
 
 ## Local Database
 
@@ -26,6 +28,26 @@ Local development uses SQLite through `appsettings.Development.json`:
 ```
 
 The `.db` file is ignored by Git and should not be committed.
+
+## Authentication Configuration
+
+Set these values through environment variables or local user secrets. Do not commit real values.
+
+- `Google__ClientId`
+- `Google__ClientSecret`
+- `FrontendUrl`
+
+Local login starts at:
+
+```bash
+open http://localhost:5050/api/auth/login
+```
+
+Current signed-in user:
+
+```bash
+curl -i http://localhost:5050/api/me
+```
 
 ## Migration Commands
 
@@ -77,8 +99,7 @@ curl http://localhost:5050/api/public/stats
 
 ## Not Implemented Yet
 
-- OAuth / OIDC authentication
 - Last.fm integration
 - SignalR
 - Production PostgreSQL configuration
-- Frontend UI for these backend features
+- Protected CRUD workflows
