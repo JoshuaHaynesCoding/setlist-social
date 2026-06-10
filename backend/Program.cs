@@ -266,6 +266,204 @@ app.MapGet("/api/me/dashboard", async (ClaimsPrincipal principal, AppDbContext d
     .WithName("MeDashboard")
     .WithTags("Auth");
 
+app.MapGet("/api/me/concerts", async (ClaimsPrincipal principal, AppDbContext db) =>
+{
+    var userProfile = await GetCurrentUserProfileAsync(principal, db);
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var concerts = await db.Concerts
+        .AsNoTracking()
+        .Where(concert => concert.UserProfileId == userProfile.Id)
+        .Select(concert => new ConcertResponse(
+            concert.Id,
+            concert.Title,
+            concert.Artist.Name,
+            concert.VenueName,
+            concert.City,
+            concert.Region,
+            concert.Country,
+            concert.ConcertDate,
+            concert.CreatedAt,
+            concert.UpdatedAt))
+        .ToListAsync();
+
+    return Results.Ok(concerts
+        .OrderByDescending(concert => concert.ConcertDate)
+        .ToList());
+})
+    .WithName("MeConcerts")
+    .WithTags("My Concerts");
+
+app.MapGet("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal principal, AppDbContext db) =>
+{
+    var userProfile = await GetCurrentUserProfileAsync(principal, db);
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var concert = await db.Concerts
+        .AsNoTracking()
+        .Where(concert => concert.Id == id && concert.UserProfileId == userProfile.Id)
+        .Select(concert => new ConcertResponse(
+            concert.Id,
+            concert.Title,
+            concert.Artist.Name,
+            concert.VenueName,
+            concert.City,
+            concert.Region,
+            concert.Country,
+            concert.ConcertDate,
+            concert.CreatedAt,
+            concert.UpdatedAt))
+        .SingleOrDefaultAsync();
+
+    // Non-owned ids return 404 to avoid revealing whether another user's concert exists.
+    return concert is null ? Results.NotFound() : Results.Ok(concert);
+})
+    .WithName("MeConcert")
+    .WithTags("My Concerts");
+
+app.MapPost("/api/me/concerts", async (ConcertRequest request, ClaimsPrincipal principal, AppDbContext db) =>
+{
+    var userProfile = await GetCurrentUserProfileAsync(principal, db);
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var validationErrors = ValidateConcertRequest(request);
+
+    if (validationErrors.Count > 0)
+    {
+        return Results.ValidationProblem(validationErrors);
+    }
+
+    var artist = await FindOrCreateArtistAsync(request.ArtistName, db);
+
+    var concert = new Concert
+    {
+        Title = request.Title.Trim(),
+        VenueName = TrimToNull(request.VenueName),
+        City = TrimToNull(request.City),
+        Region = TrimToNull(request.Region),
+        Country = TrimToNull(request.Country),
+        ConcertDate = request.ConcertDate,
+        Artist = artist,
+        UserProfileId = userProfile.Id
+    };
+
+    db.Concerts.Add(concert);
+    await db.SaveChangesAsync();
+
+    var response = new ConcertResponse(
+        concert.Id,
+        concert.Title,
+        artist.Name,
+        concert.VenueName,
+        concert.City,
+        concert.Region,
+        concert.Country,
+        concert.ConcertDate,
+        concert.CreatedAt,
+        concert.UpdatedAt);
+
+    return Results.Created($"/api/me/concerts/{concert.Id}", response);
+})
+    .WithName("CreateMeConcert")
+    .WithTags("My Concerts");
+
+app.MapPut("/api/me/concerts/{id:int}", async (
+    int id,
+    ConcertRequest request,
+    ClaimsPrincipal principal,
+    AppDbContext db) =>
+{
+    var userProfile = await GetCurrentUserProfileAsync(principal, db);
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var validationErrors = ValidateConcertRequest(request);
+
+    if (validationErrors.Count > 0)
+    {
+        return Results.ValidationProblem(validationErrors);
+    }
+
+    var concert = await db.Concerts
+        .Include(existingConcert => existingConcert.Artist)
+        .SingleOrDefaultAsync(existingConcert =>
+            existingConcert.Id == id && existingConcert.UserProfileId == userProfile.Id);
+
+    // Non-owned ids return 404 to avoid revealing whether another user's concert exists.
+    if (concert is null)
+    {
+        return Results.NotFound();
+    }
+
+    var artist = await FindOrCreateArtistAsync(request.ArtistName, db);
+
+    concert.Title = request.Title.Trim();
+    concert.VenueName = TrimToNull(request.VenueName);
+    concert.City = TrimToNull(request.City);
+    concert.Region = TrimToNull(request.Region);
+    concert.Country = TrimToNull(request.Country);
+    concert.ConcertDate = request.ConcertDate;
+    concert.Artist = artist;
+
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new ConcertResponse(
+        concert.Id,
+        concert.Title,
+        artist.Name,
+        concert.VenueName,
+        concert.City,
+        concert.Region,
+        concert.Country,
+        concert.ConcertDate,
+        concert.CreatedAt,
+        concert.UpdatedAt));
+})
+    .WithName("UpdateMeConcert")
+    .WithTags("My Concerts");
+
+app.MapDelete("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal principal, AppDbContext db) =>
+{
+    var userProfile = await GetCurrentUserProfileAsync(principal, db);
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var concert = await db.Concerts
+        .SingleOrDefaultAsync(existingConcert =>
+            existingConcert.Id == id && existingConcert.UserProfileId == userProfile.Id);
+
+    // Non-owned ids return 404 to avoid revealing whether another user's concert exists.
+    if (concert is null)
+    {
+        return Results.NotFound();
+    }
+
+    db.Concerts.Remove(concert);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+})
+    .WithName("DeleteMeConcert")
+    .WithTags("My Concerts");
+
 app.MapGet("/api/public/stats", async (AppDbContext db) =>
 {
     var stats = new
@@ -562,3 +760,110 @@ static string GetDisplayName(ClaimsPrincipal principal)
         ?? principal.FindFirstValue(ClaimTypes.Email)
         ?? "Setlist Social User";
 }
+
+static async Task<UserProfile?> GetCurrentUserProfileAsync(ClaimsPrincipal principal, AppDbContext db)
+{
+    if (principal.Identity?.IsAuthenticated != true)
+    {
+        return null;
+    }
+
+    var oauthSubject = GetOAuthSubject(principal);
+
+    if (oauthSubject is null)
+    {
+        return null;
+    }
+
+    return await db.UserProfiles
+        .SingleOrDefaultAsync(user => user.OAuthSubject == oauthSubject);
+}
+
+static async Task<Artist> FindOrCreateArtistAsync(string artistName, AppDbContext db)
+{
+    var normalizedName = artistName.Trim();
+    var artist = await db.Artists
+        .FirstOrDefaultAsync(existingArtist => existingArtist.Name == normalizedName);
+
+    if (artist is not null)
+    {
+        return artist;
+    }
+
+    artist = new Artist { Name = normalizedName };
+    db.Artists.Add(artist);
+    return artist;
+}
+
+static Dictionary<string, string[]> ValidateConcertRequest(ConcertRequest request)
+{
+    var errors = new Dictionary<string, string[]>();
+
+    if (string.IsNullOrWhiteSpace(request.Title))
+    {
+        errors[nameof(request.Title)] = ["Title is required."];
+    }
+    else if (request.Title.Trim().Length > 240)
+    {
+        errors[nameof(request.Title)] = ["Title must be 240 characters or fewer."];
+    }
+
+    if (string.IsNullOrWhiteSpace(request.ArtistName))
+    {
+        errors[nameof(request.ArtistName)] = ["Artist name is required."];
+    }
+    else if (request.ArtistName.Trim().Length > 200)
+    {
+        errors[nameof(request.ArtistName)] = ["Artist name must be 200 characters or fewer."];
+    }
+
+    if (request.ConcertDate == default)
+    {
+        errors[nameof(request.ConcertDate)] = ["Concert date is required."];
+    }
+
+    AddMaxLengthError(errors, nameof(request.VenueName), request.VenueName, 200);
+    AddMaxLengthError(errors, nameof(request.City), request.City, 120);
+    AddMaxLengthError(errors, nameof(request.Region), request.Region, 120);
+    AddMaxLengthError(errors, nameof(request.Country), request.Country, 120);
+
+    return errors;
+}
+
+static void AddMaxLengthError(
+    Dictionary<string, string[]> errors,
+    string fieldName,
+    string? value,
+    int maxLength)
+{
+    if (!string.IsNullOrWhiteSpace(value) && value.Trim().Length > maxLength)
+    {
+        errors[fieldName] = [$"{fieldName} must be {maxLength} characters or fewer."];
+    }
+}
+
+static string? TrimToNull(string? value)
+{
+    return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+}
+
+public sealed record ConcertRequest(
+    string Title,
+    string ArtistName,
+    string? VenueName,
+    string? City,
+    string? Region,
+    string? Country,
+    DateTimeOffset ConcertDate);
+
+public sealed record ConcertResponse(
+    int Id,
+    string Title,
+    string ArtistName,
+    string? VenueName,
+    string? City,
+    string? Region,
+    string? Country,
+    DateTimeOffset ConcertDate,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset UpdatedAt);

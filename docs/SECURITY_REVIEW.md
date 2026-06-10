@@ -13,6 +13,8 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 - `POST /api/auth/logout` clears the auth cookie.
 - `GET /api/me` returns the signed-in profile or `401` if unauthenticated.
 - `GET /api/me/dashboard` returns only the current signed-in user's dashboard data or `401` if unauthenticated.
+- `GET/POST/PUT/DELETE /api/me/concerts` endpoints are scoped to the current signed-in user's `UserProfile`.
+- Non-owned concert ids return `404 Not Found` instead of `403 Forbidden` to avoid revealing whether another user's concert exists.
 - The frontend has protected route guards for dashboard/profile/concerts/wishlist/settings placeholder pages.
 - Public endpoints remain public.
 - No secrets are stored in the repository.
@@ -37,6 +39,6 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 
 ## Known Current Limitations
 
-- OAuth is present as a foundation; protected route shells exist, but full protected CRUD workflows are not implemented.
+- OAuth is present as a foundation; the first user-owned concerts CRUD flow exists, but other protected CRUD workflows are not implemented.
 - No production security headers or rate limiting are configured.
 - Production CORS and cookie settings still need deployment-specific review.

@@ -387,6 +387,92 @@ select {
   margin: 8px 0 0;
 }
 
+.concert-form {
+  background: #ffffff;
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+
+.form-header {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.form-header h2 {
+  color: #111827;
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.form-grid label {
+  color: #526174;
+  display: grid;
+  font-size: 0.86rem;
+  font-weight: 800;
+  gap: 6px;
+}
+
+.form-grid input {
+  background: #f8fafc;
+  border: 1px solid #cfd8e6;
+  border-radius: 8px;
+  color: #172033;
+  min-height: 42px;
+  padding: 9px 11px;
+  width: 100%;
+}
+
+.form-grid input:focus {
+  border-color: #b23a48;
+  outline: 3px solid rgba(178, 58, 72, 0.16);
+}
+
+.form-error {
+  color: #9f2534;
+  font-weight: 800;
+  margin: 0;
+}
+
+.concert-list {
+  display: grid;
+  gap: 14px;
+}
+
+.concert-card {
+  align-items: center;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr auto;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.danger-button {
+  background: #fff2f2;
+  color: #9f2534;
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .stat-label {
   color: #637085;
   font-size: 0.82rem;
@@ -453,6 +539,15 @@ select {
   .hero-grid,
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .form-grid,
+  .concert-card {
+    grid-template-columns: 1fr;
+  }
+
+  .card-actions {
+    justify-content: flex-start;
   }
 
   .stats-grid {

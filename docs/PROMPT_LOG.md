@@ -112,6 +112,17 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Rejected: Full CRUD, Last.fm, SignalR, production deployment, secrets, and cross-user dashboard access.
 - Tested: `dotnet build` and `npm run build` passed.
 
+## 2026-06-10 - User-Owned My Concerts CRUD
+
+- Tool: ChatGPT/Codex
+- Goal: Add the first protected user-owned CRUD flow.
+- Prompt: Add signed-in user's concert CRUD endpoints and replace `/my-concerts` with a protected create/edit/delete UI.
+- Result: Added current-user-only concert API endpoints, validation, DTO responses, and a protected frontend list/form flow.
+- Accepted: `GET/POST/PUT/DELETE /api/me/concerts`, user isolation, simple validation, and real My Concerts UI.
+- Changed: Updated `Program.cs`, `MyConcertsPage.jsx`, styles, security review, and prompt log.
+- Rejected: Last.fm, SignalR, deployment, secrets, full-scale seed, and cross-user concert access.
+- Tested: `dotnet build` and `npm run build` passed.
+
 ## 2026-06-10 - GitHub Copilot Accessibility Review
 
 - Tool: GitHub Copilot
