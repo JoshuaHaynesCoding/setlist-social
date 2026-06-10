@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext.jsx';
 import AuthStatus from './AuthStatus.jsx';
 
 const navItems = [
@@ -9,7 +10,19 @@ const navItems = [
   { to: '/activity', label: 'Activity' },
 ];
 
+const protectedNavItems = [
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/profile', label: 'Profile' },
+  { to: '/my-concerts', label: 'My Concerts' },
+  { to: '/wishlist', label: 'Wishlist' },
+  { to: '/settings', label: 'Settings' },
+];
+
 export default function Navbar() {
+  const { status } = useAuth();
+  const visibleNavItems =
+    status === 'signed-in' ? [...navItems, ...protectedNavItems] : navItems;
+
   return (
     <header className="site-header">
       <nav className="navbar" aria-label="Main navigation">
@@ -17,7 +30,7 @@ export default function Navbar() {
           Setlist Social
         </NavLink>
         <ul className="nav-links">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <li key={item.to}>
               <NavLink
                 className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}

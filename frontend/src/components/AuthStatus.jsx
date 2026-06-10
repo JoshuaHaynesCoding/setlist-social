@@ -1,59 +1,18 @@
-import { useEffect, useState } from 'react';
-
-const API_BASE_URL = 'http://localhost:5050';
+import { useState } from 'react';
+import { API_BASE_URL } from '../api.js';
+import { useAuth } from '../auth/AuthContext.jsx';
 
 export default function AuthStatus() {
-  const [status, setStatus] = useState('checking');
-  const [profile, setProfile] = useState(null);
+  const { profile, signOut, status } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadProfile() {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/me`, {
-          credentials: 'include',
-          signal: controller.signal,
-        });
-
-        if (response.status === 401) {
-          setStatus('signed-out');
-          return;
-        }
-
-        if (!response.ok) {
-          setStatus('unavailable');
-          return;
-        }
-
-        const data = await response.json();
-        setProfile(data);
-        setStatus('signed-in');
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          setStatus('unavailable');
-        }
-      }
-    }
-
-    loadProfile();
-
-    return () => controller.abort();
-  }, []);
 
   async function handleLogout() {
     setIsLoggingOut(true);
 
     try {
-      await fetch(`${API_BASE_URL}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      await signOut();
     } finally {
       setIsLoggingOut(false);
-      setProfile(null);
-      setStatus('signed-out');
     }
   }
 

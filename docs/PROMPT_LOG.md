@@ -101,6 +101,17 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Rejected: New features, secrets, and broader auth rewrites.
 - Tested: `dotnet build` passed.
 
+## 2026-06-10 - Protected Route And Dashboard Foundation
+
+- Tool: ChatGPT/Codex
+- Goal: Add the first signed-in frontend area without full CRUD.
+- Prompt: Add protected frontend routes and a simple signed-in dashboard foundation; add `GET /api/me/dashboard` for the current user only.
+- Result: Added a user-scoped dashboard endpoint, shared frontend auth context, protected route wrapper, signed-in dashboard, and placeholder protected pages.
+- Accepted: `/dashboard`, `/profile`, `/my-concerts`, `/wishlist`, `/settings`, and current-user dashboard counts.
+- Changed: Updated backend auth endpoints, frontend routing/auth components/pages/styles, security review, and prompt log.
+- Rejected: Full CRUD, Last.fm, SignalR, production deployment, secrets, and cross-user dashboard access.
+- Tested: `dotnet build` and `npm run build` passed.
+
 ## 2026-06-10 - GitHub Copilot Accessibility Review
 
 - Tool: GitHub Copilot

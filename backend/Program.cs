@@ -208,6 +208,64 @@ app.MapGet("/api/me", async (ClaimsPrincipal principal, AppDbContext db) =>
     .WithName("Me")
     .WithTags("Auth");
 
+app.MapGet("/api/me/dashboard", async (ClaimsPrincipal principal, AppDbContext db) =>
+{
+    if (principal.Identity?.IsAuthenticated != true)
+    {
+        return Results.Unauthorized();
+    }
+
+    var oauthSubject = GetOAuthSubject(principal);
+
+    if (oauthSubject is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var userProfile = await db.UserProfiles
+        .AsNoTracking()
+        .Where(user => user.OAuthSubject == oauthSubject)
+        .Select(user => new
+        {
+            user.Id,
+            user.DisplayName,
+            user.Bio,
+            user.CreatedAt,
+            user.UpdatedAt,
+            ConcertCount = user.Concerts.Count,
+            ReviewCount = user.Reviews.Count,
+            WishlistItemCount = user.WishlistItems.Count,
+            RecentActivityEventCount = user.ActivityEvents.Count
+        })
+        .SingleOrDefaultAsync();
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    return Results.Ok(new
+    {
+        Profile = new
+        {
+            userProfile.Id,
+            userProfile.DisplayName,
+            userProfile.Bio,
+            userProfile.CreatedAt,
+            userProfile.UpdatedAt
+        },
+        Counts = new
+        {
+            Concerts = userProfile.ConcertCount,
+            Reviews = userProfile.ReviewCount,
+            WishlistItems = userProfile.WishlistItemCount,
+            RecentActivityEvents = userProfile.RecentActivityEventCount
+        }
+    });
+})
+    .WithName("MeDashboard")
+    .WithTags("Auth");
+
 app.MapGet("/api/public/stats", async (AppDbContext db) =>
 {
     var stats = new

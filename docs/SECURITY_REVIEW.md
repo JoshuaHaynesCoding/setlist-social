@@ -12,6 +12,8 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 - `GET /api/auth/callback` creates or updates a local `UserProfile` after successful login.
 - `POST /api/auth/logout` clears the auth cookie.
 - `GET /api/me` returns the signed-in profile or `401` if unauthenticated.
+- `GET /api/me/dashboard` returns only the current signed-in user's dashboard data or `401` if unauthenticated.
+- The frontend has protected route guards for dashboard/profile/concerts/wishlist/settings placeholder pages.
 - Public endpoints remain public.
 - No secrets are stored in the repository.
 - `.env` files are ignored by `.gitignore`.
@@ -35,6 +37,6 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 
 ## Known Current Limitations
 
-- OAuth is present only as a foundation; protected product workflows are not implemented.
+- OAuth is present as a foundation; protected route shells exist, but full protected CRUD workflows are not implemented.
 - No production security headers or rate limiting are configured.
 - Production CORS and cookie settings still need deployment-specific review.
