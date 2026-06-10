@@ -81,6 +81,36 @@ select {
   color: #ffffff;
 }
 
+.auth-status {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.auth-status span,
+.auth-note {
+  color: #526174;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.auth-button {
+  background: #b23a48;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 800;
+  min-height: 38px;
+  padding: 8px 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 .page-shell {
   margin: 0 auto;
   max-width: 1120px;
@@ -387,6 +417,10 @@ select {
   }
 
   .nav-links {
+    justify-content: flex-start;
+  }
+
+  .auth-status {
     justify-content: flex-start;
   }
 

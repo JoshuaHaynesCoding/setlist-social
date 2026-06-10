@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import AuthStatus from './AuthStatus.jsx';
 
 const navItems = [
   { to: '/', label: 'Home' },
@@ -15,18 +16,20 @@ export default function Navbar() {
         <NavLink className="brand" to="/">
           Setlist Social
         </NavLink>
-        <div className="nav-links">
+        <ul className="nav-links">
           {navItems.map((item) => (
-            <NavLink
-              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-              end={item.to === '/'}
-              key={item.to}
-              to={item.to}
-            >
-              {item.label}
-            </NavLink>
+            <li key={item.to}>
+              <NavLink
+                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+                end={item.to === '/'}
+                to={item.to}
+              >
+                {item.label}
+              </NavLink>
+            </li>
           ))}
-        </div>
+        </ul>
+        <AuthStatus />
       </nav>
     </header>
   );
