@@ -869,3 +869,5 @@ public sealed record ConcertResponse(
     DateTimeOffset ConcertDate,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
+
+public partial class Program;

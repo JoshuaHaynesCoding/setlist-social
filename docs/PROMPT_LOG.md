@@ -123,6 +123,17 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Rejected: Last.fm, SignalR, deployment, secrets, full-scale seed, and cross-user concert access.
 - Tested: `dotnet build` and `npm run build` passed.
 
+## 2026-06-10 - Backend Auth And User Isolation Tests
+
+- Tool: ChatGPT/Codex
+- Goal: Add backend tests for protected API behavior and My Concerts user isolation.
+- Prompt: Create an xUnit integration test project using a test auth scheme to verify unauthenticated `401` responses and current-user-only concert access.
+- Result: Added backend integration tests with an in-memory SQLite database and test-only authentication.
+- Accepted: Tests for `/api/me`, `/api/me/dashboard`, `/api/me/concerts`, signed-in concert create/read, and cross-user read/update/delete denial.
+- Changed: Added `backend.tests`, exposed `Program` for test hosting, and updated security/prompt docs.
+- Rejected: Real OAuth testing, production auth changes, Last.fm, SignalR, deployment, secrets, and new product features.
+- Tested: `dotnet test backend.tests/SetlistSocial.Api.Tests.csproj` passed.
+
 ## 2026-06-10 - GitHub Copilot Accessibility Review
 
 - Tool: GitHub Copilot

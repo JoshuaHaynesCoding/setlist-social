@@ -15,6 +15,7 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 - `GET /api/me/dashboard` returns only the current signed-in user's dashboard data or `401` if unauthenticated.
 - `GET/POST/PUT/DELETE /api/me/concerts` endpoints are scoped to the current signed-in user's `UserProfile`.
 - Non-owned concert ids return `404 Not Found` instead of `403 Forbidden` to avoid revealing whether another user's concert exists.
+- Backend integration tests cover unauthenticated `401` responses and My Concerts user isolation with a test-only auth scheme.
 - The frontend has protected route guards for dashboard/profile/concerts/wishlist/settings placeholder pages.
 - Public endpoints remain public.
 - No secrets are stored in the repository.
