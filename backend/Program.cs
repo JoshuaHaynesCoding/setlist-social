@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SetlistSocial.Api.Data;
@@ -34,6 +35,13 @@ builder.Services.AddCors(options =>
                 .AllowCredentials();
         }
     });
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 builder.Services
@@ -100,6 +108,8 @@ var app = builder.Build();
 
 await ApplyMigrationsOnStartupAsync(app);
 await ApplySeedOnStartupAsync(app);
+
+app.UseForwardedHeaders();
 
 if (GetAllowedFrontendOrigins(app.Configuration, app.Environment).Count > 0)
 {
@@ -1280,6 +1290,8 @@ static List<string> GetAllowedFrontendOrigins(IConfiguration configuration, IHos
         origins.Add("http://localhost:5173");
         origins.Add("http://127.0.0.1:5173");
     }
+
+    origins.Add("https://setlist-social.vercel.app");
 
     var frontendUrl = configuration["FrontendUrl"];
 
