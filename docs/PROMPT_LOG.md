@@ -210,3 +210,14 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Changed: Added Playwright dependency/config/specs, frontend scripts/docs, backend gated E2E auth endpoint, backend docs, and prompt log.
 - Rejected: Production auth changes, secrets, schema changes, deployment, app rewrite, and real Google OAuth in automated E2E.
 - Tested: `npm run e2e`, `npm test`, `npm run build`, and `dotnet build backend/SetlistSocial.Api.csproj` passed.
+
+## 2026-06-11 - GitHub Actions CI
+
+- Tool: ChatGPT/Codex
+- Goal: Add continuous integration for backend, frontend, and E2E checks.
+- Prompt: Create a GitHub Actions workflow for pushes and pull requests to `main` that restores/builds/tests the backend, runs frontend tests/build, and includes stable Playwright E2E without secrets.
+- Result: Added `.github/workflows/ci.yml` with backend, frontend, and E2E jobs; documented CI commands and the E2E test auth flag.
+- Accepted: .NET 10 setup, Node setup with npm cache, backend integration tests, frontend Vitest/build, Playwright Chromium install, local SQLite migration, and no secrets.
+- Changed: Added CI workflow, updated README CI summary/current status, and updated prompt log.
+- Rejected: Deployment steps, production auth changes, schema changes, secrets, and claims that GitHub CI passed before it has run.
+- Tested: Workflow YAML parsed locally; GitHub Actions result is pending until pushed.
