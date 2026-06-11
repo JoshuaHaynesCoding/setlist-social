@@ -28,7 +28,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "WishlistItems"
                 ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                USING ("UpdatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -67,7 +67,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "WishlistItems"
                 ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                USING ("CreatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -91,7 +91,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "UserProfiles"
                 ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                USING ("UpdatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -117,7 +117,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "UserProfiles"
                 ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                USING ("CreatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -141,7 +141,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Tags"
                 ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                USING ("UpdatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -157,7 +157,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Tags"
                 ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                USING ("CreatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -180,7 +180,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Reviews"
                 ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                USING ("UpdatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -194,7 +194,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Reviews"
                 ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                USING ("CreatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -263,7 +263,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Concerts"
                 ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                USING ("UpdatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -290,7 +290,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Concerts"
                 ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                USING ("CreatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -307,7 +307,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Concerts"
                 ALTER COLUMN "ConcertDate" TYPE timestamp with time zone
-                USING "ConcertDate" AT TIME ZONE 'UTC';
+                USING ("ConcertDate"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -341,7 +341,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Artists"
                 ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                USING ("UpdatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -366,7 +366,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "Artists"
                 ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                USING ("CreatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -410,7 +410,7 @@ namespace SetlistSocial.Api.Migrations
             migrationBuilder.Sql("""
                 ALTER TABLE "ActivityEvents"
                 ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                USING ("CreatedAt"::timestamp without time zone AT TIME ZONE 'UTC');
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -450,8 +450,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "WishlistItems"
-                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "UpdatedAt" TYPE text
+                USING ("UpdatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -489,8 +489,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "WishlistItems"
-                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "CreatedAt" TYPE text
+                USING ("CreatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -513,8 +513,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "UserProfiles"
-                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "UpdatedAt" TYPE text
+                USING ("UpdatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -539,8 +539,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "UserProfiles"
-                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "CreatedAt" TYPE text
+                USING ("CreatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -563,8 +563,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Tags"
-                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "UpdatedAt" TYPE text
+                USING ("UpdatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -579,8 +579,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Tags"
-                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "CreatedAt" TYPE text
+                USING ("CreatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -602,8 +602,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Reviews"
-                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "UpdatedAt" TYPE text
+                USING ("UpdatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -616,8 +616,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Reviews"
-                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "CreatedAt" TYPE text
+                USING ("CreatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -685,8 +685,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Concerts"
-                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "UpdatedAt" TYPE text
+                USING ("UpdatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -712,8 +712,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Concerts"
-                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "CreatedAt" TYPE text
+                USING ("CreatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -729,8 +729,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Concerts"
-                ALTER COLUMN "ConcertDate" TYPE timestamp without time zone
-                USING "ConcertDate" AT TIME ZONE 'UTC';
+                ALTER COLUMN "ConcertDate" TYPE text
+                USING ("ConcertDate"::text);
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -763,8 +763,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Artists"
-                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
-                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "UpdatedAt" TYPE text
+                USING ("UpdatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<string>(
@@ -788,8 +788,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "Artists"
-                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "CreatedAt" TYPE text
+                USING ("CreatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<int>(
@@ -832,8 +832,8 @@ namespace SetlistSocial.Api.Migrations
 
             migrationBuilder.Sql("""
                 ALTER TABLE "ActivityEvents"
-                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
-                USING "CreatedAt" AT TIME ZONE 'UTC';
+                ALTER COLUMN "CreatedAt" TYPE text
+                USING ("CreatedAt"::text);
                 """);
 
             migrationBuilder.AlterColumn<int>(
