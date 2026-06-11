@@ -17,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="stats" element={<App.StatsPage />} />
             <Route path="artists" element={<App.ArtistsPage />} />
             <Route path="activity" element={<App.ActivityPage />} />
+            <Route path="discover" element={<App.DiscoverPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="dashboard" element={<App.DashboardPage />} />
               <Route path="profile" element={<App.ProfilePage />} />

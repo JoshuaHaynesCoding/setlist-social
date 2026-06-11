@@ -134,6 +134,17 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Rejected: Real OAuth testing, production auth changes, Last.fm, SignalR, deployment, secrets, and new product features.
 - Tested: `dotnet test backend.tests/SetlistSocial.Api.Tests.csproj` passed.
 
+## 2026-06-10 - Last.fm Artist Search Integration
+
+- Tool: ChatGPT/Codex
+- Goal: Add the first third-party API integration without exposing secrets.
+- Prompt: Add Last.fm `artist.search` through the backend and a public Discover page that searches artists.
+- Result: Added backend Last.fm client, public search endpoint, frontend `/discover` route, search form, result cards, and setup docs.
+- Accepted: `LastFm:ApiKey` configuration via user-secrets, clean DTOs, missing-key `503` response, and public Last.fm data display.
+- Changed: Added backend external client files, Discover page, navbar route, styles, backend README, architecture doc, and prompt log.
+- Rejected: Last.fm user account/scrobble integration, SignalR, deployment, secrets, wishlist/concert actions from search, and full-scale seed.
+- Tested: `dotnet build` and `npm run build` passed.
+
 ## 2026-06-10 - GitHub Copilot Accessibility Review
 
 - Tool: GitHub Copilot

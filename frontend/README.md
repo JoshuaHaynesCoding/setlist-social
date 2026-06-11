@@ -9,6 +9,7 @@ React + Vite + JavaScript public frontend for Setlist Social.
 - `/stats` - community stats from the backend
 - `/artists` - public artists from the backend
 - `/activity` - recent public activity from the backend
+- `/discover` - public Last.fm artist search
 
 ## Run Frontend And Backend Together
 
@@ -44,6 +45,7 @@ The public data pages call:
 - `http://localhost:5050/api/public/stats`
 - `http://localhost:5050/api/public/artists`
 - `http://localhost:5050/api/public/activity`
+- `http://localhost:5050/api/external/lastfm/search?artist=ARTIST_NAME`
 - `http://localhost:5050/api/me`
 
 If the backend is not running, these pages show an error state.
@@ -56,8 +58,7 @@ http://localhost:5050/api/auth/login
 
 ## Not Implemented Yet
 
-- Protected routes
-- Last.fm integration
+- Last.fm user account or scrobble integration
 - SignalR live updates
 - Production API URL configuration
 - Secrets

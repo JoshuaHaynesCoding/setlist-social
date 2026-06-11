@@ -286,6 +286,12 @@ select {
   margin: 0;
 }
 
+.section-heading {
+  color: #111827;
+  font-size: 1.6rem;
+  margin: 0;
+}
+
 .card-kicker {
   color: #b23a48;
   font-size: 0.76rem;
@@ -438,6 +444,41 @@ select {
   outline: 3px solid rgba(178, 58, 72, 0.16);
 }
 
+.search-form {
+  align-items: end;
+  background: #ffffff;
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  max-width: 760px;
+  padding: 22px;
+}
+
+.search-form label {
+  color: #526174;
+  display: grid;
+  font-size: 0.86rem;
+  font-weight: 800;
+  gap: 6px;
+}
+
+.search-form input {
+  background: #f8fafc;
+  border: 1px solid #cfd8e6;
+  border-radius: 8px;
+  color: #172033;
+  min-height: 42px;
+  padding: 9px 11px;
+  width: 100%;
+}
+
+.search-form input:focus {
+  border-color: #b23a48;
+  outline: 3px solid rgba(178, 58, 72, 0.16);
+}
+
 .form-error {
   color: #9f2534;
   font-weight: 800;
@@ -471,6 +512,28 @@ select {
 .button:disabled {
   cursor: wait;
   opacity: 0.72;
+}
+
+.artist-result-card {
+  align-content: start;
+}
+
+.artist-image {
+  aspect-ratio: 1;
+  background: #e5eaf2;
+  border-radius: 8px;
+  object-fit: cover;
+  width: 72px;
+}
+
+.text-link {
+  color: #b23a48;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.text-link:hover {
+  text-decoration: underline;
 }
 
 .stat-label {
@@ -542,7 +605,8 @@ select {
   }
 
   .form-grid,
-  .concert-card {
+  .concert-card,
+  .search-form {
     grid-template-columns: 1fr;
   }
 

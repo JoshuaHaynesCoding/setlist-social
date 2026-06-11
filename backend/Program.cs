@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SetlistSocial.Api.Data;
+using SetlistSocial.Api.External;
 using SetlistSocial.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,6 +82,7 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpClient<ILastFmClient, LastFmClient>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -483,6 +485,34 @@ app.MapGet("/api/public/stats", async (AppDbContext db) =>
 })
     .WithName("PublicStats")
     .WithTags("Public");
+
+app.MapGet("/api/external/lastfm/search", async (
+    string? artist,
+    ILastFmClient lastFmClient,
+    IConfiguration configuration,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(artist))
+    {
+        return Results.ValidationProblem(new Dictionary<string, string[]>
+        {
+            [nameof(artist)] = ["Artist query is required."]
+        });
+    }
+
+    if (string.IsNullOrWhiteSpace(configuration["LastFm:ApiKey"]))
+    {
+        return Results.Problem(
+            title: "Last.fm is not configured.",
+            detail: "Set LastFm__ApiKey before using artist discovery.",
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+
+    var results = await lastFmClient.SearchArtistsAsync(artist, cancellationToken);
+    return Results.Ok(results);
+})
+    .WithName("LastFmArtistSearch")
+    .WithTags("External");
 
 app.MapGet("/api/public/artists", async (AppDbContext db) =>
 {

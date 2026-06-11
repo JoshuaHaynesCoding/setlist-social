@@ -14,6 +14,7 @@ ASP.NET Core Minimal API targeting .NET 10.
 - Development-only seed endpoint: `POST /api/dev/seed`
 - Google OAuth/OIDC foundation with cookie authentication
 - Current user endpoint: `GET /api/me`
+- Public Last.fm artist search endpoint: `GET /api/external/lastfm/search?artist=ARTIST_NAME`
 
 ## Local Database
 
@@ -47,6 +48,20 @@ Current signed-in user:
 
 ```bash
 curl -i http://localhost:5050/api/me
+```
+
+## Last.fm Configuration
+
+Set the Last.fm API key with user-secrets for local development. Do not commit real values.
+
+```bash
+dotnet user-secrets set "LastFm:ApiKey" "YOUR_LASTFM_API_KEY"
+```
+
+Artist search:
+
+```bash
+curl "http://localhost:5050/api/external/lastfm/search?artist=cher"
 ```
 
 ## Migration Commands
@@ -99,7 +114,6 @@ curl http://localhost:5050/api/public/stats
 
 ## Not Implemented Yet
 
-- Last.fm integration
 - SignalR
 - Production PostgreSQL configuration
 - Protected CRUD workflows

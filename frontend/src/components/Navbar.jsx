@@ -8,6 +8,7 @@ const navItems = [
   { to: '/stats', label: 'Stats' },
   { to: '/artists', label: 'Artists' },
   { to: '/activity', label: 'Activity' },
+  { to: '/discover', label: 'Discover' },
 ];
 
 const protectedNavItems = [
