@@ -2,7 +2,7 @@
 
 ## Status
 
-Structured placeholder. Design decisions are planned and will be filled in as the product takes shape.
+Early product/design notes for the current Setlist Social demo foundation.
 
 ## Product Context
 
@@ -12,8 +12,17 @@ Structured placeholder. Design decisions are planned and will be filled in as th
 
 ## Current UI
 
-- Minimal React + Vite starter screen
-- Basic React Router navigation between starter routes
+- Public React routes for landing, about, stats, artists, activity, and discovery
+- Protected signed-in foundations for dashboard, profile, my concerts, wishlist, and settings
+- Simple card/list layouts intended to stay readable with larger local development data
+
+## Simulated Taste Groups
+
+Full-scale development seed data uses simulated listener taste groups so demo activity feels more realistic without using real user data or external API calls. The current groups are hip-hop, R&B/soul, classic rock, hard rock/metal, electronic, indie/alternative, pop, and jazz.
+
+Seed artists come from the curated local list at `docs/SEED_ARTIST_LISTS.txt`, while users and interactions are generated locally.
+
+These groups are for local development behavior only. They are not a finished recommendation system or a production personalization model.
 
 ## Planned Design Direction
 

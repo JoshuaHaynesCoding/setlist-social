@@ -12,6 +12,7 @@ ASP.NET Core Minimal API targeting .NET 10.
 - Initial domain models and relationships
 - Public stats endpoint: `GET /api/public/stats`
 - Development-only seed endpoint: `POST /api/dev/seed`
+- Development-only full-scale seed/reset endpoint: `POST /api/dev/seed/full?reset=true`
 - Google OAuth/OIDC foundation with cookie authentication
 - Current user endpoint: `GET /api/me`
 - Public Last.fm artist search endpoint: `GET /api/external/lastfm/search?artist=ARTIST_NAME`
@@ -112,8 +113,37 @@ If any app data already exists, the endpoint returns `already-seeded` and does n
 curl http://localhost:5050/api/public/stats
 ```
 
+Seed full-scale simulated local development data into an empty local database:
+
+```bash
+curl -X POST "http://localhost:5050/api/dev/seed/full"
+```
+
+If local app data already exists, reset and rebuild the full-scale simulated dataset:
+
+```bash
+curl -X POST "http://localhost:5050/api/dev/seed/full?reset=true"
+```
+
+The full-scale seed endpoint is only mapped in the `Development` environment. It creates deterministic simulated data locally, including at least 500 generated user profiles, more than 5,000 domain records across artists/concerts/reviews/wishlist/tags, and more than 10,000 activity events.
+
+Artist records come from the curated local list at `docs/SEED_ARTIST_LISTS.txt`. The seed process reads that file by genre and does not call Last.fm.
+
+The generated users are spread across simulated music taste groups:
+
+- hip-hop
+- R&B/soul
+- classic rock
+- hard rock/metal
+- electronic
+- indie/alternative
+- pop
+- jazz
+
+The seed process does not require external API access. The reset option clears local app/domain data and generated seed users from the development database, while preserving non-generated `UserProfile` rows where possible. Treat reset as a local development operation only.
+
 ## Not Implemented Yet
 
 - SignalR
 - Production PostgreSQL configuration
-- Protected CRUD workflows
+- Full protected CRUD beyond the current My Concerts and Wishlist foundations

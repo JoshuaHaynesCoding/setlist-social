@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SetlistSocial.Api.Data;
+using SetlistSocial.Api.Development;
 using SetlistSocial.Api.External;
 using SetlistSocial.Api.Models;
 
@@ -712,6 +713,14 @@ app.MapGet("/api/public/activity", async (AppDbContext db) =>
 
 if (app.Environment.IsDevelopment())
 {
+    app.MapPost("/api/dev/seed/full", async (bool? reset, AppDbContext db, CancellationToken cancellationToken) =>
+    {
+        var result = await FullScaleDevelopmentSeeder.SeedAsync(db, app.Environment.ContentRootPath, reset == true, cancellationToken);
+        return Results.Ok(result);
+    })
+        .WithName("SeedFullScaleDevelopmentData")
+        .WithTags("Development");
+
     app.MapPost("/api/dev/seed", async (AppDbContext db) =>
     {
         var hasExistingData =

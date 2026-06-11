@@ -166,3 +166,25 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Changed: Updated auth status messaging, fallback display text, logout disabled/loading behavior, and nav semantics.
 - Rejected: Full mobile menu, layout rewrite, and unrelated frontend changes.
 - Tested: Sign-in/sign-out, `/api/me` signed in and signed out, and `npm run build`.
+
+## 2026-06-11 - Full-Scale Development Seed
+
+- Tool: ChatGPT/Codex
+- Goal: Add realistic full-scale local seed/reset data for development demos.
+- Prompt: Create a development-only full-scale seed/reset process with fake deterministic users, artists, concerts, reviews, wishlist items, tags, and activity events organized around music taste groups.
+- Result: Added `POST /api/dev/seed/full` with optional `reset=true`, generated fake coherent taste-group data locally, and documented reset behavior.
+- Accepted: Deterministic fake data, at least 500 generated users, more than 5,000 domain records, more than 10,000 activity events, and no external API calls.
+- Changed: Added full-scale development seeder, mapped a dev-only endpoint, and updated backend/architecture/design docs.
+- Rejected: Last.fm calls during seeding, real user data, secrets, SignalR, deployment, and production seeding.
+- Tested: `dotnet build backend/SetlistSocial.Api.csproj` and `npm run build` passed.
+
+## 2026-06-11 - Curated Seed Artists
+
+- Tool: ChatGPT/Codex
+- Goal: Improve full-scale seed realism with curated artist names and natural activity text.
+- Prompt: Update the full-scale seed generator to read real artist names from `docs/SEED_ARTIST_LISTS.txt`, keep genre grouping, use realistic handles, and make activity labels/descriptions friendlier.
+- Result: The development seed now loads curated local artist names by taste group, generates handle-style users, weights interactions toward matching genres, and spreads activity dates between 2022 and today.
+- Accepted: Local curated artist list, no Last.fm calls during seeding, friendly activity labels, and realistic seeded handles.
+- Changed: Updated full-scale seeder, seed endpoint wiring, backend README, architecture notes, design notes, and prompt log.
+- Rejected: OAuth changes, production auth changes, route changes, secrets, Last.fm calls in seeding, SignalR, and app rewrite.
+- Tested: `dotnet build backend/SetlistSocial.Api.csproj` and `npm run build` passed.

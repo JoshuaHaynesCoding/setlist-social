@@ -1,0 +1,405 @@
+f0\fs24 \cf0 jazz:\
+Louis Armstrong\
+Duke Ellington\
+Charlie Parker\
+Dizzy Gillespie\
+Miles Davis\
+John Coltrane\
+Ornette Coleman\
+Thelonious Monk\
+Wes Montgomery\
+Art Blakey\
+Chet Baker\
+Sonny Rollins\
+Tony Williams\
+Stan Getz\
+Bud Powell\
+Wayne Shorter\
+Philly Joe Jones\
+Frank Sinatra\
+Art Pepper\
+Chick Corea\
+Clifford Brown\
+Charlie Christian\
+Herbie Hancock\
+McCoy Tyner\
+Sonny Stitt\
+Elvin Jones\
+Ant\'f4nio Carlos Jobim\
+Nat King Cole\
+Charles Mingus\
+Scott LaFaro\
+Pat Metheny\
+Ron Carter\
+Chick Webb\
+Jim Hall\
+Michael Brecker\
+Lennie Tristano\
+Freddie Hubbard\
+Lee Morgan\
+Keith Jarrett\
+Max Roach\
+Lee Konitz\
+Roy Haynes\
+Stanley Clarke\
+Jaco Pastorius\
+Paul Chambers\
+\
+hip-hop:\
+Andr\'e9 3000\
+Kendrick Lamar\
+Guru\
+MF DOOM\
+The Notorious B.I.G.\
+Jay-Z\
+Nas\
+GZA\
+Q-Tip\
+Ghostface Killah\
+Kanye West\
+Black Thought\
+Big Boi\
+Phife Dawg\
+Big Pun\
+Raekwon\
+Mos Def\
+Rakim\
+Prodigy\
+Talib Kweli\
+Inspectah Deck\
+Masta Ace\
+Ice Cube\
+Big L\
+Eminem\
+Snoop Dogg\
+Boldy James\
+Geechi Suede\
+Tek\
+Danny Brown\
+Sonny Cheeba\
+CL Smooth\
+Earl Sweatshirt\
+Steele\
+Pimp C\
+KRS-One\
+Pete Rock\
+LL Cool J\
+Tupac\
+Lauryn Hill\
+Pusha T\
+Method Man\
+Z-Ro\
+Little Simz\
+Big B\
+U-God\
+Havoc\
+Noname\
+\
+r&b-soul:\
+Stevie Wonder\
+Aretha Franklin\
+Michael Jackson\
+Beyonc\'e9\
+Whitney Houston\
+James Brown\
+Prince\
+Mariah Carey\
+R. Kelly\
+Marvin Gaye\
+Ray Charles\
+Usher\
+Sam Cooke\
+Curtis Mayfield\
+Isaac Hayes\
+Mary J. Blige\
+Janet Jackson\
+Al Green\
+Smokey Robinson\
+Otis Redding\
+Donny Hathaway\
+Luther Vandross\
+Teddy Pendergrass\
+Bill Withers\
+Patti LaBelle\
+Chris Brown\
+Chaka Khan\
+Erykah Badu\
+Diana Ross\
+Gladys Knight\
+Anita Baker\
+Lionel Richie\
+Alicia Keys\
+Donna Summer\
+Babyface\
+Toni Braxton\
+Frank Ocean\
+Maxwell\
+Roberta Flack\
+Aaliyah\
+Brandy\
+Barry White\
+Dionne Warwick\
+SZA\
+D'Angelo\
+The Weeknd\
+Lauryn Hill\
+Rihanna\
+Bobby Brown\
+John Legend\
+\
+hard-rock-metal:\
+AC/DC\
+Black Sabbath\
+Deep Purple\
+Led Zeppelin\
+Uriah Heep\
+Wishbone Ash\
+Def Leppard\
+Diamond Head\
+Iron Maiden\
+Judas Priest\
+Mot\'f6rhead\
+Saxon\
+Aerosmith\
+Bon Jovi\
+Guns N' Roses\
+Kiss\
+M\'f6tley Cr\'fce\
+Ozzy Osbourne\
+Van Halen\
+Whitesnake\
+Anthrax\
+Exodus\
+Megadeth\
+Metallica\
+Sepultura\
+Slayer\
+Testament\
+Dream Theater\
+Mastodon\
+Opeth\
+Queensr\'ffche\
+Rush\
+Tool\
+Alice in Chains\
+Faith No More\
+Nirvana\
+Pearl Jam\
+Soundgarden\
+Stone Temple Pilots\
+Deftones\
+Korn\
+Pantera\
+Rage Against the Machine\
+System of a Down\
+Avenged Sevenfold\
+Gojira\
+Lamb of God\
+Slipknot\
+Trivium\
+\
+electronic:\
+David Guetta\
+Marshmello\
+Calvin Harris\
+Ti\'ebsto\
+Skrillex\
+Daft Punk\
+Martin Garrix\
+Deadmau5\
+The Chainsmokers\
+Alok\
+Kygo\
+Armin van Buuren\
+Zedd\
+The Prodigy\
+Swedish House Mafia\
+Diplo\
+Flume\
+Aphex Twin\
+Moby\
+Kraftwerk\
+The Chemical Brothers\
+Fatboy Slim\
+Porter Robinson\
+Madeon\
+Duke Dumont\
+Eric Prydz\
+R\'fcf\'fcs Du Sol\
+Oliver Heldens\
+Fisher\
+Hardwell\
+Meduza\
+Disclosure\
+Major Lazer\
+DJ Snake\
+Galantis\
+Illenium\
+Afrojack\
+Steve Aoki\
+KSHMR\
+Purple Disco Machine\
+Jamie xx\
+Four Tet\
+Rezz\
+Sven V\'e4th\
+Carl Cox\
+Richie Hawtin\
+Peggy Gou\
+Charlotte de Witte\
+Bonobo\
+Justice\
+\
+indie-alternative:\
+Arctic Monkeys\
+Tame Impala\
+Radiohead\
+The Strokes\
+Florence + The Machine\
+Arcade Fire\
+Vampire Weekend\
+The 1975\
+Pixies\
+The Killers\
+Bon Iver\
+Lana Del Rey\
+Foster the People\
+Glass Animals\
+Cage the Elephant\
+Phoenix\
+The National\
+MGMT\
+Alt-J\
+Mac DeMarco\
+Phoebe Bridgers\
+Clairo\
+Mitski\
+Beach House\
+Hozier\
+Wallows\
+The Black Keys\
+Interpol\
+Two Door Cinema Club\
+The xx\
+Bleachers\
+Boygenius\
+Local Natives\
+Yeah Yeah Yeahs\
+Gorillaz\
+King Princess\
+Grizzly Bear\
+Dayglow\
+TV on the Radio\
+Fleet Foxes\
+Father John Misty\
+COIN\
+Franz Ferdinand\
+Modest Mouse\
+Death Cab for Cutie\
+The Shins\
+Passion Pit\
+Spoon\
+LCD Soundsystem\
+Metric\
+\
+classic-rock:\
+The Beatles\
+The Rolling Stones\
+Pink Floyd\
+Queen\
+Fleetwood Mac\
+The Who\
+David Bowie\
+Elton John\
+Creedence Clearwater Revival\
+The Doors\
+Jimi Hendrix\
+Tom Petty and the Heartbreakers\
+Bruce Springsteen\
+Billy Joel\
+The Eagles\
+Bob Dylan\
+Eric Clapton\
+Dire Straits\
+Electric Light Orchestra\
+Steely Dan\
+The Kinks\
+Supertramp\
+Chicago\
+Santana\
+Journey\
+Boston\
+Foreigner\
+Toto\
+REO Speedwagon\
+The Police\
+Steve Miller Band\
+Lynyrd Skynyrd\
+The Allman Brothers Band\
+The Doobie Brothers\
+ZZ Top\
+Heart\
+Blondie\
+The Cars\
+Cheap Trick\
+Peter Frampton\
+Jethro Tull\
+Thin Lizzy\
+Bad Company\
+Blue \'d6yster Cult\
+Genesis\
+Yes\
+Traffic\
+The Grateful Dead\
+Faces\
+\
+pop:\
+Madonna\
+George Michael\
+Cyndi Lauper\
+Phil Collins\
+Celine Dion\
+Britney Spears\
+Christina Aguilera\
+Justin Timberlake\
+Shakira\
+P!nk\
+Gwen Stefani\
+Lady Gaga\
+Katy Perry\
+Taylor Swift\
+Bruno Mars\
+Adele\
+Justin Bieber\
+Ariana Grande\
+Ed Sheeran\
+Dua Lipa\
+Billie Eilish\
+Olivia Rodrigo\
+Harry Styles\
+Shawn Mendes\
+Miley Cyrus\
+Selena Gomez\
+Lorde\
+Halsey\
+Sabrina Carpenter\
+Chappell Roan\
+Troye Sivan\
+Charli XCX\
+Camila Cabello\
+Tate McRae\
+ABBA\
+Kylie Minogue\
+Nelly Furtado\
+Alanis Morissette\
+Kelly Clarkson\
+Avril Lavigne\
+Kesha\
+Carly Rae Jepsen\
+Ellie Goulding\
+Zara Larsson\
+Tove Lo\
+Bebe Rexha\
+Alessia Cara\
+Niall Horan\
+Louis Tomlinson
