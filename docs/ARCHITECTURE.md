@@ -42,6 +42,8 @@ Production migrations are EF Core migrations. They can be applied manually, or t
 
 Development seed/reset endpoints are only mapped in `Development`, and full-scale simulated data is not seeded automatically on production startup.
 
+Production can opt into the same simulated dataset with `Seed__RunOnStartup=true`. That path runs after the migration startup step, skips existing generated/domain data, preserves real OAuth users, and never resets or deletes production data.
+
 ## Current Request Flow
 
 1. React frontend calls the ASP.NET Core API.

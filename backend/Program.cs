@@ -99,6 +99,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 await ApplyMigrationsOnStartupAsync(app);
+await ApplySeedOnStartupAsync(app);
 
 if (GetAllowedFrontendOrigins(app.Configuration, app.Environment).Count > 0)
 {
@@ -1230,6 +1231,44 @@ static async Task ApplyMigrationsOnStartupAsync(WebApplication app)
     await db.Database.MigrateAsync();
 
     logger.LogInformation("EF Core database migrations completed.");
+}
+
+static async Task ApplySeedOnStartupAsync(WebApplication app)
+{
+    if (!app.Configuration.GetValue<bool>("Seed:RunOnStartup"))
+    {
+        return;
+    }
+
+    var logger = app.Services.GetRequiredService<ILoggerFactory>()
+        .CreateLogger("ProductionSeed");
+
+    logger.LogInformation("Production startup seed requested. Checking database state.");
+
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var result = await FullScaleDevelopmentSeeder.SeedProductionAsync(
+        db,
+        app.Environment.ContentRootPath,
+        CancellationToken.None);
+
+    if (result.Status is "already-seeded" or "existing-data-skip")
+    {
+        logger.LogInformation(
+            "Production startup seed skipped with status {Status}. Users: {Users}, domain records: {DomainRecords}, activity events: {ActivityEvents}.",
+            result.Status,
+            result.Users,
+            result.Artists + result.Concerts + result.Reviews + result.WishlistItems + result.Tags,
+            result.ActivityEvents);
+        return;
+    }
+
+    logger.LogInformation(
+        "Production startup seed finished with status {Status}. Users: {Users}, domain records: {DomainRecords}, activity events: {ActivityEvents}.",
+        result.Status,
+        result.Users,
+        result.Artists + result.Concerts + result.Reviews + result.WishlistItems + result.Tags,
+        result.ActivityEvents);
 }
 
 static List<string> GetAllowedFrontendOrigins(IConfiguration configuration, IHostEnvironment environment)

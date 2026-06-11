@@ -62,20 +62,58 @@ public static class FullScaleDevelopmentSeeder
         bool reset,
         CancellationToken cancellationToken)
     {
+        return await SeedInternalAsync(
+            db,
+            contentRootPath,
+            reset,
+            allowExistingRealUsers: false,
+            cancellationToken);
+    }
+
+    public static async Task<FullScaleSeedResult> SeedProductionAsync(
+        AppDbContext db,
+        string contentRootPath,
+        CancellationToken cancellationToken)
+    {
+        return await SeedInternalAsync(
+            db,
+            contentRootPath,
+            reset: false,
+            allowExistingRealUsers: true,
+            cancellationToken);
+    }
+
+    private static async Task<FullScaleSeedResult> SeedInternalAsync(
+        AppDbContext db,
+        string contentRootPath,
+        bool reset,
+        bool allowExistingRealUsers,
+        CancellationToken cancellationToken)
+    {
         var hasExistingFullSeed = await db.UserProfiles
             .AnyAsync(user => user.OAuthSubject.StartsWith(SeedUserPrefix), cancellationToken);
-        var hasAnyExistingData =
-            await db.UserProfiles.AnyAsync(cancellationToken)
-            || await db.Artists.AnyAsync(cancellationToken)
+        var hasExistingDomainData =
+            await db.Artists.AnyAsync(cancellationToken)
             || await db.Concerts.AnyAsync(cancellationToken)
             || await db.Reviews.AnyAsync(cancellationToken)
             || await db.WishlistItems.AnyAsync(cancellationToken)
             || await db.Tags.AnyAsync(cancellationToken)
             || await db.ActivityEvents.AnyAsync(cancellationToken);
+        var hasAnyExistingData = hasExistingDomainData
+            || (!allowExistingRealUsers && await db.UserProfiles.AnyAsync(cancellationToken));
 
         if (hasExistingFullSeed && !reset)
         {
-            return await BuildResultAsync("already-seeded", reset, "Full-scale seed users already exist. Use reset=true to rebuild the dataset.", db, cancellationToken);
+            var note = allowExistingRealUsers
+                ? "Production seed users already exist, so startup seed did not create duplicates."
+                : "Full-scale seed users already exist. Use reset=true to rebuild the dataset.";
+
+            return await BuildResultAsync("already-seeded", reset, note, db, cancellationToken);
+        }
+
+        if (hasExistingDomainData && allowExistingRealUsers)
+        {
+            return await BuildResultAsync("existing-data-skip", reset, "The database already contains domain data, so production startup seed did not create duplicates.", db, cancellationToken);
         }
 
         if (hasAnyExistingData && !reset)
@@ -239,6 +277,8 @@ public static class FullScaleDevelopmentSeeder
     {
         var candidates = new[]
         {
+            Path.GetFullPath(Path.Combine(contentRootPath, "SeedData", "SEED_ARTIST_LISTS.txt")),
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "SeedData", "SEED_ARTIST_LISTS.txt")),
             Path.GetFullPath(Path.Combine(contentRootPath, "..", "docs", "SEED_ARTIST_LISTS.txt")),
             Path.GetFullPath(Path.Combine(contentRootPath, "docs", "SEED_ARTIST_LISTS.txt")),
             Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "docs", "SEED_ARTIST_LISTS.txt"))

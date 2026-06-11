@@ -41,6 +41,7 @@ Required production backend environment variables:
 ```text
 ConnectionStrings__DefaultConnection
 Database__RunMigrationsOnStartup
+Seed__RunOnStartup
 Google__ClientId
 Google__ClientSecret
 FrontendUrl
@@ -58,6 +59,8 @@ For Render, set `ConnectionStrings__DefaultConnection` to a PostgreSQL connectio
 The app reads Render's `PORT` environment variable automatically. Locally, `dotnet run` still uses the normal ASP.NET Core launch settings.
 
 If `Database__RunMigrationsOnStartup=true`, the backend applies EF Core migrations during startup. This is disabled by default. It does not call `EnsureCreated`, does not reset data, and does not run development seed endpoints.
+
+If `Seed__RunOnStartup=true`, the backend runs a production-safe simulated seed after the migration startup step. This is disabled by default. It does not reset, delete, truncate, or drop data. It skips if generated seed users already exist, and it skips if domain data already exists so rows are not duplicated. Existing real OAuth users can remain in the database while simulated seed users are added.
 
 ## Authentication Configuration
 
@@ -131,7 +134,9 @@ Render deployment option:
 2. Create a Render web service for the backend using `backend/Dockerfile`.
 3. Set the backend environment variables listed above.
 4. Run EF Core migrations against the PostgreSQL database as a manual release step, or set `Database__RunMigrationsOnStartup=true` so the service applies migrations when it starts.
-5. Confirm `GET /api/health` returns `{ "status": "ok" }`.
+5. To populate an empty production database for the class project demo, temporarily set `Seed__RunOnStartup=true` and redeploy/restart after migrations are enabled.
+6. Confirm `GET /api/health` returns `{ "status": "ok" }`.
+7. Confirm `GET /api/public/stats` shows seeded counts, then set `Seed__RunOnStartup=false` or remove the variable and redeploy/restart.
 
 ## Run Locally
 

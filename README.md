@@ -108,6 +108,7 @@ Backend environment variables:
 ```text
 ConnectionStrings__DefaultConnection
 Database__RunMigrationsOnStartup
+Seed__RunOnStartup
 Google__ClientId
 Google__ClientSecret
 FrontendUrl
@@ -126,6 +127,7 @@ Production notes:
 - Production uses PostgreSQL through `ConnectionStrings__DefaultConnection`.
 - The backend reads Render's `PORT` environment variable when present.
 - Set `Database__RunMigrationsOnStartup=true` on Render if you want the backend to apply EF Core migrations when the service starts.
+- Set `Seed__RunOnStartup=true` only when you want Render to run the one-time simulated production seed after migrations. Turn it off after stats show seeded data.
 - Do not run development seed/reset endpoints in production; they are only mapped in `Development`.
 - Apply EF Core migrations to the production PostgreSQL database as a deliberate deployment step.
 
