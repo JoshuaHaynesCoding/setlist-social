@@ -19,7 +19,7 @@ This repository contains the current Setlist Social frontend, backend, tests, an
 - Backend: ASP.NET Core Minimal API targeting .NET 10
 - API docs: Swagger/OpenAPI configured
 - Health check: `GET /api/health` returns `{ "status": "ok" }`
-- Database: EF Core with SQLite local development
+- Database: EF Core with SQLite local development and PostgreSQL production configuration
 - Auth: Google OAuth/OIDC foundation with cookie auth
 - External API: Last.fm artist search through the backend
 - Real-time: SignalR public activity updates
@@ -29,7 +29,6 @@ This repository contains the current Setlist Social frontend, backend, tests, an
 
 - Deeper Last.fm features
 - Broader protected CRUD workflows
-- PostgreSQL production database
 - Deployment: Vercel for frontend, Render for backend, Neon or Render PostgreSQL for production database
 
 ## Local Development
@@ -100,7 +99,35 @@ npm run e2e
 
 The E2E job uses `E2E__EnableTestAuth=true` with a local SQLite database on the CI runner. It does not require Google OAuth credentials or other secrets.
 
+## Deployment Configuration
+
+No production secrets or deployed URLs are committed to this repository. Configure these values in the hosting provider dashboards.
+
+Backend environment variables:
+
+```text
+ConnectionStrings__DefaultConnection
+Google__ClientId
+Google__ClientSecret
+FrontendUrl
+LastFm__ApiKey
+```
+
+Frontend environment variables:
+
+```text
+VITE_API_BASE_URL
+```
+
+Production notes:
+
+- Local development defaults to SQLite through `backend/appsettings.Development.json`.
+- Production uses PostgreSQL through `ConnectionStrings__DefaultConnection`.
+- The backend reads Render's `PORT` environment variable when present.
+- Do not run development seed/reset endpoints in production; they are only mapped in `Development`.
+- Apply EF Core migrations to the production PostgreSQL database as a deliberate deployment step.
+
 ## Notes
 
 - No secrets or deployed URLs are stored in this repository.
-- Production deployment has not been configured yet.
+- Production hosting is prepared but has not been pushed/deployed from this repository yet.

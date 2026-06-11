@@ -11,7 +11,7 @@ The repository contains a working starter architecture with public pages, protec
 - Backend: ASP.NET Core Minimal API targeting .NET 10
 - API documentation: Swagger/OpenAPI via Swashbuckle
 - Auth: Google OAuth/OIDC foundation with cookie authentication
-- ORM/database: EF Core with SQLite local development and PostgreSQL provider support
+- ORM/database: EF Core with SQLite local development and PostgreSQL production support
 - External API: Last.fm artist search through the backend only
 - Current external endpoint: `GET /api/external/lastfm/search?artist=ARTIST_NAME`
 - Real-time: SignalR public activity hub at `/hubs/activity`
@@ -26,6 +26,19 @@ The repository contains a working starter architecture with public pages, protec
 - Planned frontend deployment: Vercel
 - Planned backend deployment: Render
 - Planned production database hosting: Neon or Render PostgreSQL
+
+## Deployment Shape
+
+The frontend is designed for Vercel with `VITE_API_BASE_URL` pointing at the deployed backend API origin. Local frontend development falls back to `http://localhost:5050`.
+
+The backend is designed for Render. It can run from `backend/Dockerfile`, reads Render's `PORT` environment variable when present, and expects production configuration through environment variables rather than committed settings.
+
+Database provider selection is environment-aware:
+
+- Development/local default: SQLite through `ConnectionStrings__DefaultConnection` in `appsettings.Development.json`
+- Production: PostgreSQL through `ConnectionStrings__DefaultConnection`
+
+Development seed/reset endpoints are only mapped in `Development`, and full-scale simulated data is not seeded automatically on production startup.
 
 ## Current Request Flow
 
@@ -49,4 +62,4 @@ The full-scale seed reads real artist names from the curated local file at `docs
 
 - Full protected CRUD is not implemented beyond the current My Concerts and Wishlist foundations.
 - Last.fm is limited to public artist search.
-- Deployment is not configured.
+- Deployment credentials, hosted service instances, and deployed URLs are not configured in the repository.

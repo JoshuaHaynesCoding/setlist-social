@@ -221,3 +221,14 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Changed: Added CI workflow, updated README CI summary/current status, and updated prompt log.
 - Rejected: Deployment steps, production auth changes, schema changes, secrets, and claims that GitHub CI passed before it has run.
 - Tested: Workflow YAML parsed locally; GitHub Actions result is pending until pushed.
+
+## 2026-06-11 - Production PostgreSQL Deployment Prep
+
+- Tool: ChatGPT/Codex
+- Goal: Prepare the backend for Render deployment with PostgreSQL while preserving local SQLite development.
+- Prompt: Confirm provider support, add clear production PostgreSQL selection, Render port handling, backend Dockerfile, deployment environment docs, and keep secrets out of source.
+- Result: Added shared database provider configuration, production PostgreSQL selection, configurable frontend CORS origin, Render `PORT` handling, and backend Docker packaging notes.
+- Accepted: SQLite local default, PostgreSQL production path, existing health endpoint, manual production migration docs, and no automatic production seed/reset.
+- Changed: Updated backend startup/database configuration, design-time EF configuration, backend Docker files, README deployment notes, architecture notes, and prompt log.
+- Rejected: Deployment credentials, real connection strings, OAuth behavior changes, schema changes, automatic production migrations, and production seed/reset.
+- Tested: `dotnet build backend/SetlistSocial.Api.csproj`, `dotnet test backend.tests/SetlistSocial.Api.Tests.csproj`, `npm test`, and `npm run build` passed.

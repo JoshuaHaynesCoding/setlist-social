@@ -15,14 +15,13 @@ public sealed class DesignTimeAppDbContextFactory : IDesignTimeDbContextFactory<
             .AddEnvironmentVariables()
             .Build();
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
+        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+        var environmentName = configuration["ASPNETCORE_ENVIRONMENT"]
+            ?? configuration["DOTNET_ENVIRONMENT"]
+            ?? "Development";
+        DatabaseConfiguration.Configure(optionsBuilder, configuration, environmentName);
 
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite(connectionString)
-            .Options;
-
-        return new AppDbContext(options);
+        return new AppDbContext(optionsBuilder.Options);
     }
 
     private static string ResolveConfigurationBasePath()

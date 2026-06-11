@@ -8,7 +8,7 @@ ASP.NET Core Minimal API targeting .NET 10.
 - Public health endpoint: `GET /api/health`
 - EF Core `AppDbContext`
 - SQLite provider for local development
-- PostgreSQL provider installed for planned production database support
+- PostgreSQL provider support for production
 - Initial domain models and relationships
 - Public stats endpoint: `GET /api/public/stats`
 - Development-only seed endpoint: `POST /api/dev/seed`
@@ -31,6 +31,30 @@ Local development uses SQLite through `appsettings.Development.json`:
 ```
 
 The `.db` file is ignored by Git and should not be committed.
+
+## Production Database
+
+Production should use PostgreSQL through the `ConnectionStrings__DefaultConnection` environment variable. Local development continues to use SQLite unless a PostgreSQL-style connection string or explicit provider is configured.
+
+Required production backend environment variables:
+
+```text
+ConnectionStrings__DefaultConnection
+Google__ClientId
+Google__ClientSecret
+FrontendUrl
+LastFm__ApiKey
+```
+
+Optional explicit provider setting:
+
+```text
+Database__Provider=PostgreSQL
+```
+
+For Render, set `ConnectionStrings__DefaultConnection` to a PostgreSQL connection string in Npgsql format, for example using keys such as `Host`, `Database`, `Username`, `Password`, and `SSL Mode`. Do not commit the real value.
+
+The app reads Render's `PORT` environment variable automatically. Locally, `dotnet run` still uses the normal ASP.NET Core launch settings.
 
 ## Authentication Configuration
 
@@ -87,6 +111,24 @@ If `dotnet ef` is not installed globally:
 ```bash
 dotnet tool install --global dotnet-ef
 ```
+
+Production migration option:
+
+```bash
+ASPNETCORE_ENVIRONMENT=Production \
+ConnectionStrings__DefaultConnection="YOUR_POSTGRES_CONNECTION_STRING" \
+dotnet ef database update --project backend/SetlistSocial.Api.csproj --startup-project backend/SetlistSocial.Api.csproj
+```
+
+Use a real production connection string only in your shell or hosting environment. Do not place it in source control.
+
+Render deployment option:
+
+1. Create or attach a PostgreSQL database.
+2. Create a Render web service for the backend using `backend/Dockerfile`.
+3. Set the backend environment variables listed above.
+4. Run EF Core migrations against the PostgreSQL database as a manual release step.
+5. Confirm `GET /api/health` returns `{ "status": "ok" }`.
 
 ## Run Locally
 
@@ -151,5 +193,4 @@ The seed process does not require external API access. The reset option clears l
 
 ## Not Implemented Yet
 
-- Production PostgreSQL configuration
 - Full protected CRUD beyond the current My Concerts and Wishlist foundations

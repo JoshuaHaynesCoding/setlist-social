@@ -13,24 +13,26 @@ using SetlistSocial.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-const string DevelopmentCorsPolicy = "DevelopmentFrontend";
+const string FrontendCorsPolicy = "Frontend";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
-
-    options.UseSqlite(connectionString);
+    DatabaseConfiguration.Configure(options, builder.Configuration, builder.Environment);
 });
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(DevelopmentCorsPolicy, policy =>
+    options.AddPolicy(FrontendCorsPolicy, policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        var allowedOrigins = GetAllowedFrontendOrigins(builder.Configuration, builder.Environment);
+
+        if (allowedOrigins.Count > 0)
+        {
+            policy.WithOrigins([.. allowedOrigins])
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
     });
 });
 
@@ -45,8 +47,12 @@ builder.Services
     {
         options.Cookie.Name = "setlist_social_auth";
         options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SameSite = builder.Environment.IsProduction()
+            ? SameSiteMode.None
+            : SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = builder.Environment.IsProduction()
+            ? CookieSecurePolicy.Always
+            : CookieSecurePolicy.SameAsRequest;
 
         options.Events.OnRedirectToLogin = context =>
         {
@@ -92,9 +98,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (GetAllowedFrontendOrigins(app.Configuration, app.Environment).Count > 0)
 {
-    app.UseCors(DevelopmentCorsPolicy);
+    app.UseCors(FrontendCorsPolicy);
 }
 
 app.UseSwagger();
@@ -1038,7 +1044,16 @@ if (app.Environment.IsDevelopment())
         .WithTags("Development");
 }
 
-app.Run();
+var renderPort = Environment.GetEnvironmentVariable("PORT");
+
+if (int.TryParse(renderPort, out var port))
+{
+    app.Run($"http://0.0.0.0:{port}");
+}
+else
+{
+    app.Run();
+}
 
 static string? GetOAuthSubject(ClaimsPrincipal principal)
 {
@@ -1194,6 +1209,26 @@ static string FormatConcertDisplayText(string artistName, string? venueName)
 static Task BroadcastActivityAsync(IHubContext<ActivityHub> activityHub, PublicActivityEventResponse activity)
 {
     return activityHub.Clients.All.SendAsync("activityCreated", activity);
+}
+
+static List<string> GetAllowedFrontendOrigins(IConfiguration configuration, IHostEnvironment environment)
+{
+    var origins = new List<string>();
+
+    if (environment.IsDevelopment() || environment.IsEnvironment("Testing"))
+    {
+        origins.Add("http://localhost:5173");
+        origins.Add("http://127.0.0.1:5173");
+    }
+
+    var frontendUrl = configuration["FrontendUrl"];
+
+    if (Uri.TryCreate(frontendUrl, UriKind.Absolute, out var uri))
+    {
+        origins.Add(uri.GetLeftPart(UriPartial.Authority));
+    }
+
+    return origins.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 }
 
 public sealed record ConcertRequest(
