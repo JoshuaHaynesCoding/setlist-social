@@ -15,6 +15,8 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 - `GET /api/me/dashboard` returns only the current signed-in user's dashboard data or `401` if unauthenticated.
 - `GET/POST/PUT/DELETE /api/me/concerts` endpoints are scoped to the current signed-in user's `UserProfile`.
 - Non-owned concert ids return `404 Not Found` instead of `403 Forbidden` to avoid revealing whether another user's concert exists.
+- `GET/POST/DELETE /api/me/wishlist` endpoints are scoped to the current signed-in user's `UserProfile`.
+- Non-owned wishlist item ids return `404 Not Found` instead of `403 Forbidden` to avoid revealing whether another user's wishlist item exists.
 - Backend integration tests cover unauthenticated `401` responses and My Concerts user isolation with a test-only auth scheme.
 - The frontend has protected route guards for dashboard/profile/concerts/wishlist/settings placeholder pages.
 - Public endpoints remain public.
@@ -40,6 +42,6 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 
 ## Known Current Limitations
 
-- OAuth is present as a foundation; the first user-owned concerts CRUD flow exists, but other protected CRUD workflows are not implemented.
+- OAuth is present as a foundation; user-owned concerts and wishlist flows exist, but other protected CRUD workflows are not implemented.
 - No production security headers or rate limiting are configured.
 - Production CORS and cookie settings still need deployment-specific review.

@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { API_BASE_URL } from '../api.js';
+import { useAuth } from '../auth/AuthContext.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 
 export default function DiscoverPage() {
+  const { status: authStatus } = useAuth();
   const [artist, setArtist] = useState('');
   const [results, setResults] = useState([]);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  const [savedMessage, setSavedMessage] = useState('');
+  const [savingArtist, setSavingArtist] = useState('');
 
   async function searchArtists(event) {
     event.preventDefault();
@@ -22,6 +26,7 @@ export default function DiscoverPage() {
     try {
       setStatus('loading');
       setError('');
+      setSavedMessage('');
 
       const url = `${API_BASE_URL}/api/external/lastfm/search?artist=${encodeURIComponent(
         artist.trim(),
@@ -53,13 +58,52 @@ export default function DiscoverPage() {
     }
   }
 
+  async function addToWishlist(result) {
+    setSavingArtist(result.name);
+    setSavedMessage('');
+    setError('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/me/wishlist`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          artistName: result.name,
+          sourceUrl: result.url ?? null,
+          sourceName: 'Last.fm',
+        }),
+      });
+
+      if (response.status === 401) {
+        setError('Sign in to save artists.');
+        setStatus('error');
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Backend returned ${response.status}`);
+      }
+
+      setSavedMessage(`${result.name} was added to your Setlist Social wishlist.`);
+    } catch {
+      setError('Could not add this artist to your wishlist.');
+      setStatus('error');
+    } finally {
+      setSavingArtist('');
+    }
+  }
+
   return (
     <section className="content-section">
       <p className="eyebrow">Discover</p>
       <h1>Search for artists.</h1>
       <p className="lede narrow">
         Find artists through the backend Last.fm integration. This is public
-        external data only; wishlist and concert actions are planned later.
+        external data; signed-in users can save artists to their Setlist Social
+        wishlist.
       </p>
 
       <form className="search-form" onSubmit={searchArtists}>
@@ -89,6 +133,13 @@ export default function DiscoverPage() {
 
       {status === 'error' ? <ErrorState title="Search unavailable" message={error} /> : null}
 
+      {savedMessage ? (
+        <section className="state-panel success-panel" role="status" aria-live="polite">
+          <h2>Saved</h2>
+          <p>{savedMessage}</p>
+        </section>
+      ) : null}
+
       {status === 'success' && results.length === 0 ? (
         <EmptyState
           title="No artists found"
@@ -103,6 +154,13 @@ export default function DiscoverPage() {
             <h2 className="section-heading" id="lastfm-results-heading">
               Artist results
             </h2>
+            {authStatus === 'signed-in' ? (
+              <p className="card-detail">
+                Save artists here to add them to your Setlist Social wishlist.
+              </p>
+            ) : (
+              <p className="card-detail">Sign in to save artists.</p>
+            )}
           </div>
           <div className="card-grid">
             {results.map((result) => (
@@ -121,6 +179,16 @@ export default function DiscoverPage() {
                   <a className="text-link" href={result.url} rel="noreferrer" target="_blank">
                     View on Last.fm
                   </a>
+                ) : null}
+                {authStatus === 'signed-in' ? (
+                  <button
+                    className="button secondary-button"
+                    disabled={savingArtist === result.name}
+                    onClick={() => addToWishlist(result)}
+                    type="button"
+                  >
+                    {savingArtist === result.name ? 'Adding...' : 'Add to wishlist'}
+                  </button>
                 ) : null}
               </article>
             ))}

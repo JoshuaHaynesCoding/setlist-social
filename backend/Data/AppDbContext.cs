@@ -101,6 +101,12 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.Property(item => item.Notes)
                 .HasMaxLength(1000);
 
+            entity.Property(item => item.SourceName)
+                .HasMaxLength(120);
+
+            entity.Property(item => item.SourceUrl)
+                .HasMaxLength(1000);
+
             entity.HasOne(item => item.UserProfile)
                 .WithMany(user => user.WishlistItems)
                 .HasForeignKey(item => item.UserProfileId)

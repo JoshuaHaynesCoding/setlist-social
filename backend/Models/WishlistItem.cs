@@ -4,6 +4,8 @@ public sealed class WishlistItem : IHasTimestamps
 {
     public int Id { get; set; }
     public string? Notes { get; set; }
+    public string? SourceName { get; set; }
+    public string? SourceUrl { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
 

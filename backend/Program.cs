@@ -436,7 +436,6 @@ app.MapPut("/api/me/concerts/{id:int}", async (
         concert.CreatedAt,
         concert.UpdatedAt));
 })
-    .RequireAuthorization()
     .WithName("UpdateMeConcert")
     .WithTags("My Concerts");
 
@@ -464,9 +463,103 @@ app.MapDelete("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal princi
 
     return Results.NoContent();
 })
-    .RequireAuthorization()
     .WithName("DeleteMeConcert")
     .WithTags("My Concerts");
+
+app.MapGet("/api/me/wishlist", async (ClaimsPrincipal principal, AppDbContext db) =>
+{
+    var userProfile = await GetCurrentUserProfileAsync(principal, db);
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var wishlistItems = await db.WishlistItems
+        .AsNoTracking()
+        .Where(item => item.UserProfileId == userProfile.Id)
+        .Select(item => new WishlistItemResponse(
+            item.Id,
+            item.Artist == null ? "Unknown artist" : item.Artist.Name,
+            item.SourceUrl,
+            item.SourceName,
+            item.CreatedAt,
+            item.UpdatedAt))
+        .ToListAsync();
+
+    return Results.Ok(wishlistItems
+        .OrderByDescending(item => item.CreatedAt)
+        .ToList());
+})
+    .WithName("MeWishlist")
+    .WithTags("My Wishlist");
+
+app.MapPost("/api/me/wishlist", async (WishlistItemRequest request, ClaimsPrincipal principal, AppDbContext db) =>
+{
+    var userProfile = await GetCurrentUserProfileAsync(principal, db);
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var validationErrors = ValidateWishlistItemRequest(request);
+
+    if (validationErrors.Count > 0)
+    {
+        return Results.ValidationProblem(validationErrors);
+    }
+
+    var artist = await FindOrCreateArtistAsync(request.ArtistName, db);
+    var wishlistItem = new WishlistItem
+    {
+        Artist = artist,
+        UserProfileId = userProfile.Id,
+        SourceName = TrimToNull(request.SourceName),
+        SourceUrl = TrimToNull(request.SourceUrl)
+    };
+
+    db.WishlistItems.Add(wishlistItem);
+    await db.SaveChangesAsync();
+
+    var response = new WishlistItemResponse(
+        wishlistItem.Id,
+        artist.Name,
+        wishlistItem.SourceUrl,
+        wishlistItem.SourceName,
+        wishlistItem.CreatedAt,
+        wishlistItem.UpdatedAt);
+
+    return Results.Created($"/api/me/wishlist/{wishlistItem.Id}", response);
+})
+    .WithName("CreateMeWishlistItem")
+    .WithTags("My Wishlist");
+
+app.MapDelete("/api/me/wishlist/{id:int}", async (int id, ClaimsPrincipal principal, AppDbContext db) =>
+{
+    var userProfile = await GetCurrentUserProfileAsync(principal, db);
+
+    if (userProfile is null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var wishlistItem = await db.WishlistItems
+        .SingleOrDefaultAsync(item => item.Id == id && item.UserProfileId == userProfile.Id);
+
+    // Non-owned ids return 404 to avoid revealing whether another user's wishlist item exists.
+    if (wishlistItem is null)
+    {
+        return Results.NotFound();
+    }
+
+    db.WishlistItems.Remove(wishlistItem);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+})
+    .WithName("DeleteMeWishlistItem")
+    .WithTags("My Wishlist");
 
 app.MapGet("/api/public/stats", async (AppDbContext db) =>
 {
@@ -862,6 +955,31 @@ static Dictionary<string, string[]> ValidateConcertRequest(ConcertRequest reques
     return errors;
 }
 
+static Dictionary<string, string[]> ValidateWishlistItemRequest(WishlistItemRequest request)
+{
+    var errors = new Dictionary<string, string[]>();
+
+    if (string.IsNullOrWhiteSpace(request.ArtistName))
+    {
+        errors[nameof(request.ArtistName)] = ["Artist name is required."];
+    }
+    else if (request.ArtistName.Trim().Length > 200)
+    {
+        errors[nameof(request.ArtistName)] = ["Artist name must be 200 characters or fewer."];
+    }
+
+    AddMaxLengthError(errors, nameof(request.SourceName), request.SourceName, 120);
+    AddMaxLengthError(errors, nameof(request.SourceUrl), request.SourceUrl, 1000);
+
+    if (!string.IsNullOrWhiteSpace(request.SourceUrl)
+        && !Uri.TryCreate(request.SourceUrl.Trim(), UriKind.Absolute, out _))
+    {
+        errors[nameof(request.SourceUrl)] = ["Source URL must be an absolute URL."];
+    }
+
+    return errors;
+}
+
 static void AddMaxLengthError(
     Dictionary<string, string[]> errors,
     string fieldName,
@@ -897,6 +1015,19 @@ public sealed record ConcertResponse(
     string? Region,
     string? Country,
     DateTimeOffset ConcertDate,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset UpdatedAt);
+
+public sealed record WishlistItemRequest(
+    string ArtistName,
+    string? SourceUrl,
+    string? SourceName);
+
+public sealed record WishlistItemResponse(
+    int Id,
+    string ArtistName,
+    string? SourceUrl,
+    string? SourceName,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
 

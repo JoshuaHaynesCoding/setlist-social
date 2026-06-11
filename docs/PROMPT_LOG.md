@@ -145,6 +145,17 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Rejected: Last.fm user account/scrobble integration, SignalR, deployment, secrets, wishlist/concert actions from search, and full-scale seed.
 - Tested: `dotnet build` and `npm run build` passed.
 
+## 2026-06-10 - Last.fm Discovery To Wishlist
+
+- Tool: ChatGPT/Codex
+- Goal: Let signed-in users save discovered Last.fm artists to their Setlist Social wishlist.
+- Prompt: Add user-owned wishlist endpoints and connect Discover result cards to the signed-in user's wishlist.
+- Result: Added protected wishlist list/create/delete endpoints, wishlist source metadata, real Wishlist page, and Add to wishlist actions on Discover.
+- Accepted: Current-user-only wishlist data, source name/url, DTOs, validation, and `404` for non-owned wishlist item deletes.
+- Changed: Updated wishlist model/config/migration, backend endpoints, Discover page, Wishlist page, styles, security review, and prompt log.
+- Rejected: SignalR, deployment, full-scale seed, Last.fm user accounts/scrobbles, secrets, and concert/wishlist bulk actions.
+- Tested: `dotnet build` and `npm run build` passed.
+
 ## 2026-06-10 - GitHub Copilot Accessibility Review
 
 - Tool: GitHub Copilot
