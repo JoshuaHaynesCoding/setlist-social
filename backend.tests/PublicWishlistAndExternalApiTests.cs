@@ -47,6 +47,14 @@ public sealed class PublicWishlistAndExternalApiTests : IDisposable
         var created = await createResponse.Content.ReadFromJsonAsync<WishlistItemDto>();
         Assert.NotNull(created);
         Assert.Equal("Sade", created.ArtistName);
+        Assert.Equal("https://www.last.fm/music/example", created.SourceUrl);
+        Assert.Equal("Test source", created.SourceName);
+
+        // Add a second item to verify ordering
+        var secondResponse = await client.PostAsJsonAsync("/api/me/wishlist", NewWishlistItem("Kendrick Lamar"));
+        Assert.Equal(HttpStatusCode.Created, secondResponse.StatusCode);
+        var secondCreated = await secondResponse.Content.ReadFromJsonAsync<WishlistItemDto>();
+        Assert.NotNull(secondCreated);
 
         var listResponse = await client.GetAsync("/api/me/wishlist");
 
@@ -54,7 +62,13 @@ public sealed class PublicWishlistAndExternalApiTests : IDisposable
 
         var wishlist = await listResponse.Content.ReadFromJsonAsync<List<WishlistItemDto>>();
         Assert.NotNull(wishlist);
+        Assert.True(wishlist.Count >= 2, "Wishlist should contain at least 2 items");
         Assert.Contains(wishlist, item => item.Id == created.Id && item.ArtistName == "Sade");
+        Assert.Contains(wishlist, item => item.Id == secondCreated.Id && item.ArtistName == "Kendrick Lamar");
+        
+        // Verify ordering by CreatedAt descending (newest first)
+        Assert.True(wishlist[0].CreatedAt >= wishlist[1].CreatedAt, 
+            "Wishlist should be ordered by creation date descending");
     }
 
     [Fact]
@@ -86,10 +100,19 @@ public sealed class PublicWishlistAndExternalApiTests : IDisposable
         var client = CreateAuthenticatedClient("duplicate-user");
 
         var firstResponse = await client.PostAsJsonAsync("/api/me/wishlist", NewWishlistItem("De La Soul"));
-        var duplicateResponse = await client.PostAsJsonAsync("/api/me/wishlist", NewWishlistItem("  de la soul  "));
-
+        var first = await firstResponse.Content.ReadFromJsonAsync<WishlistItemDto>();
+        Assert.NotNull(first);
         Assert.Equal(HttpStatusCode.Created, firstResponse.StatusCode);
+
+        // Duplicate with different casing and extra spaces
+        var duplicateResponse = await client.PostAsJsonAsync("/api/me/wishlist", NewWishlistItem("  de la soul  "));
         Assert.Equal(HttpStatusCode.Conflict, duplicateResponse.StatusCode);
+
+        var conflictBody = await duplicateResponse.Content.ReadFromJsonAsync<ConflictResponseDto>();
+        Assert.NotNull(conflictBody);
+        Assert.NotNull(conflictBody.Item);
+        Assert.Equal("De La Soul", conflictBody.Item.ArtistName);
+        Assert.Equal(first.Id, conflictBody.Item.Id);
     }
 
     [Fact]
@@ -116,6 +139,22 @@ public sealed class PublicWishlistAndExternalApiTests : IDisposable
         var result = Assert.Single(results);
         Assert.Equal("Sade Test Result", result.Name);
         Assert.Equal(12345, result.Listeners);
+    }
+
+    [Fact]
+    public async Task Wishlist_POST_with_invalid_source_url_returns_400()
+    {
+        await _factory.SeedUserAsync("validation-user", "Validation User");
+        var client = CreateAuthenticatedClient("validation-user");
+
+        var invalidUrlRequest = new WishlistItemRequestDto(
+            "Test Artist",
+            "not-a-valid-url",
+            "Test source");
+
+        var response = await client.PostAsJsonAsync("/api/me/wishlist", invalidUrlRequest);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     private HttpClient CreateAuthenticatedClient(string oauthSubject)
@@ -156,4 +195,8 @@ public sealed class PublicWishlistAndExternalApiTests : IDisposable
         string? Url,
         int? Listeners,
         string? ImageUrl);
+
+    private sealed record ConflictResponseDto(
+        string Message,
+        WishlistItemDto Item);
 }
