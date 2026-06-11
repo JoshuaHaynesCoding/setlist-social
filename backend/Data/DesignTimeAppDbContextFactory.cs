@@ -8,9 +8,11 @@ public sealed class DesignTimeAppDbContextFactory : IDesignTimeDbContextFactory<
 {
     public AppDbContext CreateDbContext(string[] args)
     {
+        var basePath = ResolveConfigurationBasePath();
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.Development.json", optional: false)
+            .SetBasePath(basePath)
+            .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddEnvironmentVariables()
             .Build();
 
         var connectionString = configuration.GetConnectionString("DefaultConnection")
@@ -21,5 +23,21 @@ public sealed class DesignTimeAppDbContextFactory : IDesignTimeDbContextFactory<
             .Options;
 
         return new AppDbContext(options);
+    }
+
+    private static string ResolveConfigurationBasePath()
+    {
+        var currentDirectory = Directory.GetCurrentDirectory();
+        var candidates = new[]
+        {
+            currentDirectory,
+            Path.Combine(currentDirectory, "backend"),
+            Path.Combine(currentDirectory, "..", "backend")
+        };
+
+        return candidates
+            .Select(Path.GetFullPath)
+            .FirstOrDefault(path => File.Exists(Path.Combine(path, "appsettings.Development.json")))
+            ?? currentDirectory;
     }
 }
