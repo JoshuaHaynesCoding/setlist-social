@@ -59,7 +59,7 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Sign in required')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /sign in with google/i })).toHaveAttribute(
       'href',
-      'http://localhost:5050/api/auth/login',
+      'https://setlist-social.onrender.com/api/auth/login',
     );
   });
 
@@ -80,7 +80,7 @@ describe('AuthStatus', () => {
 
     expect(screen.getByRole('link', { name: /sign in with google/i })).toHaveAttribute(
       'href',
-      'http://localhost:5050/api/auth/login',
+      'https://setlist-social.onrender.com/api/auth/login',
     );
   });
 
