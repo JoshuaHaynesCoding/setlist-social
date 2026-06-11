@@ -20,7 +20,7 @@ test('unauthenticated visitor is blocked from protected routes', async ({ page }
   await expect(page.getByText('Sign in required')).toBeVisible();
   await expect(page.getByRole('main').getByRole('link', { name: /sign in with google/i })).toHaveAttribute(
     'href',
-    `${backendUrl}/api/auth/login`,
+    `/api/auth/login`,
   );
 });
 
