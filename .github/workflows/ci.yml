@@ -72,6 +72,8 @@ jobs:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: Data Source=${{ github.workspace }}/setlist-social-e2e.db
       E2E__EnableTestAuth: "true"
+      Google__ClientId: e2e-test-client-id
+      Google__ClientSecret: e2e-test-client-secret
 
     steps:
       - name: Checkout

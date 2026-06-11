@@ -22,6 +22,8 @@ export default defineConfig({
         ConnectionStrings__DefaultConnection:
           process.env.ConnectionStrings__DefaultConnection ?? 'Data Source=../backend/setlist-social-dev.db',
         E2E__EnableTestAuth: 'true',
+        Google__ClientId: 'e2e-test-client-id',
+        Google__ClientSecret: 'e2e-test-client-secret',
       },
       stderr: 'pipe',
       stdout: 'pipe',
