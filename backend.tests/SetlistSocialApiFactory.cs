@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using SetlistSocial.Api.Data;
+using SetlistSocial.Api.External;
 using SetlistSocial.Api.Models;
 
 namespace SetlistSocial.Api.Tests;
@@ -29,7 +30,8 @@ public sealed class SetlistSocialApiFactory : WebApplicationFactory<Program>
                 ["ConnectionStrings:DefaultConnection"] = "Data Source=:memory:",
                 ["Google:ClientId"] = "test-client-id",
                 ["Google:ClientSecret"] = "test-client-secret",
-                ["FrontendUrl"] = "http://localhost:5173"
+                ["FrontendUrl"] = "http://localhost:5173",
+                ["LastFm:ApiKey"] = "test-lastfm-api-key"
             });
         });
 
@@ -38,7 +40,9 @@ public sealed class SetlistSocialApiFactory : WebApplicationFactory<Program>
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<DbContextOptions>();
             services.RemoveAll<IDbContextOptionsConfiguration<AppDbContext>>();
+            services.RemoveAll<ILastFmClient>();
             services.AddDbContext<AppDbContext>(options => options.UseSqlite(_connection));
+            services.AddSingleton<ILastFmClient, StubLastFmClient>();
 
             services
                 .AddAuthentication(TestAuthHandler.SchemeName)
@@ -87,5 +91,24 @@ public sealed class SetlistSocialApiFactory : WebApplicationFactory<Program>
         {
             _connection.Dispose();
         }
+    }
+}
+
+file sealed class StubLastFmClient : ILastFmClient
+{
+    public Task<IReadOnlyList<LastFmArtistSearchResult>> SearchArtistsAsync(
+        string artistName,
+        CancellationToken cancellationToken)
+    {
+        IReadOnlyList<LastFmArtistSearchResult> results =
+        [
+            new LastFmArtistSearchResult(
+                $"{artistName.Trim()} Test Result",
+                "https://www.last.fm/music/test-result",
+                12345,
+                "https://example.com/test-result.png")
+        ];
+
+        return Task.FromResult(results);
     }
 }
