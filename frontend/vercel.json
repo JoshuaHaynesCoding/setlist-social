@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://setlist-social.onrender.com/api/$1"
+    },
+    {
+      "source": "/hubs/(.*)",
+      "destination": "https://setlist-social.onrender.com/hubs/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }

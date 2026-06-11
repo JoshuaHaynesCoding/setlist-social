@@ -1,10 +1,12 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://setlist-social.onrender.com';
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? '';
 
-export function apiFetch(pathOrUrl, options = {}) {
-  const url = pathOrUrl.startsWith('http') ? pathOrUrl : `${API_BASE_URL}${pathOrUrl}`;
-
-  return fetch(url, {
+export async function apiFetch(path, options = {}) {
+  return fetch(`${API_BASE_URL}${path}`, {
     ...options,
     credentials: 'include',
+    headers: {
+      ...(options.headers || {}),
+    },
   });
 }
