@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { API_BASE_URL } from '../api.js';
+import { apiFetch } from '../api.js';
 import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
@@ -25,8 +25,7 @@ export default function DashboardPage() {
         setStatus('loading');
         setError('');
 
-        const response = await fetch(`${API_BASE_URL}/api/me/dashboard`, {
-          credentials: 'include',
+        const response = await apiFetch('/api/me/dashboard', {
           signal: controller.signal,
         });
 

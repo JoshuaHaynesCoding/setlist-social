@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { API_BASE_URL } from '../api.js';
+import { apiFetch } from '../api.js';
 import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
@@ -22,8 +22,7 @@ export default function WishlistPage() {
       setStatus('loading');
       setError('');
 
-      const response = await fetch(`${API_BASE_URL}/api/me/wishlist`, {
-        credentials: 'include',
+      const response = await apiFetch('/api/me/wishlist', {
         signal,
       });
 
@@ -66,9 +65,8 @@ export default function WishlistPage() {
     setDeleteSuccessMessage('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/me/wishlist/${id}`, {
+      const response = await apiFetch(`/api/me/wishlist/${id}`, {
         method: 'DELETE',
-        credentials: 'include',
       });
 
       if (response.status === 401) {

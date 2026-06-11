@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { API_BASE_URL } from '../api.js';
+import { apiFetch } from '../api.js';
 import { useAuth } from '../auth/AuthContext.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
@@ -33,10 +33,9 @@ export default function DiscoverPage() {
       setSavedMessage('');
       setSavedMessageTone('success');
 
-      const url = `${API_BASE_URL}/api/external/lastfm/search?artist=${encodeURIComponent(
-        artist.trim(),
-      )}`;
-      const response = await fetch(url);
+      const response = await apiFetch(
+        `/api/external/lastfm/search?artist=${encodeURIComponent(artist.trim())}`,
+      );
 
       if (response.status === 503) {
         setError('Last.fm is not configured on the backend yet.');
@@ -72,9 +71,8 @@ export default function DiscoverPage() {
     setSaveError('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/me/wishlist`, {
+      const response = await apiFetch('/api/me/wishlist', {
         method: 'POST',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

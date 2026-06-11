@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { API_BASE_URL } from '../api.js';
+import { apiFetch } from '../api.js';
 
 const AuthContext = createContext(null);
 
@@ -9,8 +9,7 @@ export function AuthProvider({ children }) {
 
   const refreshProfile = useCallback(async (signal) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/me`, {
-        credentials: 'include',
+      const response = await apiFetch('/api/me', {
         signal,
       });
 
@@ -47,9 +46,8 @@ export function AuthProvider({ children }) {
   }, [refreshProfile]);
 
   const signOut = useCallback(async () => {
-    await fetch(`${API_BASE_URL}/api/auth/logout`, {
+    await apiFetch('/api/auth/logout', {
       method: 'POST',
-      credentials: 'include',
     });
 
     setProfile(null);

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
-import { API_BASE_URL } from '../api.js';
+import { API_BASE_URL, apiFetch } from '../api.js';
 
 const ARTISTS_URL = `${API_BASE_URL}/api/public/artists`;
 
@@ -19,7 +19,7 @@ export default function ArtistsPage() {
         setStatus('loading');
         setError('');
 
-        const response = await fetch(ARTISTS_URL, { signal: controller.signal });
+        const response = await apiFetch(ARTISTS_URL, { signal: controller.signal });
 
         if (!response.ok) {
           throw new Error(`Backend returned ${response.status}`);

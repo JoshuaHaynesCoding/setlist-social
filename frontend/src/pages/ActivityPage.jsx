@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
-import { API_BASE_URL } from '../api.js';
+import { API_BASE_URL, apiFetch } from '../api.js';
 
 const ACTIVITY_URL = `${API_BASE_URL}/api/public/activity`;
 const ACTIVITY_HUB_URL = `${API_BASE_URL}/hubs/activity`;
@@ -79,7 +79,7 @@ export default function ActivityPage() {
         setStatus('loading');
         setError('');
 
-        const response = await fetch(ACTIVITY_URL, { signal: controller.signal });
+        const response = await apiFetch(ACTIVITY_URL, { signal: controller.signal });
 
         if (!response.ok) {
           throw new Error(`Backend returned ${response.status}`);
@@ -93,7 +93,7 @@ export default function ActivityPage() {
           return;
         }
 
-        setError('Could not reach the backend at http://localhost:5050. Start the backend and try again.');
+        setError(`Could not reach the backend at ${API_BASE_URL}. Start the backend and try again.`);
         setStatus('error');
       }
     }

@@ -3,7 +3,7 @@ import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 import StatCard from '../components/StatCard.jsx';
-import { API_BASE_URL } from '../api.js';
+import { API_BASE_URL, apiFetch } from '../api.js';
 
 const STATS_URL = `${API_BASE_URL}/api/public/stats`;
 
@@ -30,7 +30,7 @@ export default function StatsPage() {
         setStatus('loading');
         setError('');
 
-        const response = await fetch(STATS_URL, { signal: controller.signal });
+        const response = await apiFetch(STATS_URL, { signal: controller.signal });
 
         if (!response.ok) {
           throw new Error(`Backend returned ${response.status}`);

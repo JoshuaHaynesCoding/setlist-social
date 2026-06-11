@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { API_BASE_URL } from '../api.js';
+import { apiFetch } from '../api.js';
 import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
@@ -58,8 +58,7 @@ export default function MyConcertsPage() {
       setStatus('loading');
       setError('');
 
-      const response = await fetch(`${API_BASE_URL}/api/me/concerts`, {
-        credentials: 'include',
+      const response = await apiFetch('/api/me/concerts', {
         signal,
       });
 
@@ -125,13 +124,12 @@ export default function MyConcertsPage() {
     setFormError('');
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         isEditing
-          ? `${API_BASE_URL}/api/me/concerts/${editingId}`
-          : `${API_BASE_URL}/api/me/concerts`,
+          ? `/api/me/concerts/${editingId}`
+          : '/api/me/concerts',
         {
           method: isEditing ? 'PUT' : 'POST',
-          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -172,9 +170,8 @@ export default function MyConcertsPage() {
     setDeleteSuccessId(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/me/concerts/${concertId}`, {
+      const response = await apiFetch(`/api/me/concerts/${concertId}`, {
         method: 'DELETE',
-        credentials: 'include',
       });
 
       if (response.status === 401) {
