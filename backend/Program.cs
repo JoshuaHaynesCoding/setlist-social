@@ -510,7 +510,39 @@ app.MapPost("/api/me/wishlist", async (WishlistItemRequest request, ClaimsPrinci
         return Results.ValidationProblem(validationErrors);
     }
 
-    var artist = await FindOrCreateArtistAsync(request.ArtistName, db);
+    var normalizedArtistName = request.ArtistName.Trim();
+    var normalizedArtistNameUpper = normalizedArtistName.ToUpperInvariant();
+
+    var existingWishlistItem = await db.WishlistItems
+        .AsNoTracking()
+        .Where(item => item.UserProfileId == userProfile.Id && item.Artist != null)
+        .Select(item => new
+        {
+            item.Id,
+            ArtistName = item.Artist!.Name,
+            item.SourceUrl,
+            item.SourceName,
+            item.CreatedAt,
+            item.UpdatedAt
+        })
+        .FirstOrDefaultAsync(item => item.ArtistName.ToUpper() == normalizedArtistNameUpper);
+
+    if (existingWishlistItem is not null)
+    {
+        return Results.Conflict(new
+        {
+            message = "Artist is already in your wishlist.",
+            item = new WishlistItemResponse(
+                existingWishlistItem.Id,
+                existingWishlistItem.ArtistName,
+                existingWishlistItem.SourceUrl,
+                existingWishlistItem.SourceName,
+                existingWishlistItem.CreatedAt,
+                existingWishlistItem.UpdatedAt)
+        });
+    }
+
+    var artist = await FindOrCreateArtistAsync(normalizedArtistName, db);
     var wishlistItem = new WishlistItem
     {
         Artist = artist,

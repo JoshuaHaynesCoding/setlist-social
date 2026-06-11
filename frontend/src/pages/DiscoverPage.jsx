@@ -11,8 +11,11 @@ export default function DiscoverPage() {
   const [results, setResults] = useState([]);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  const [saveError, setSaveError] = useState('');
   const [savedMessage, setSavedMessage] = useState('');
+  const [savedMessageTone, setSavedMessageTone] = useState('success');
   const [savingArtist, setSavingArtist] = useState('');
+  const [savedArtists, setSavedArtists] = useState(() => new Set());
 
   async function searchArtists(event) {
     event.preventDefault();
@@ -26,7 +29,9 @@ export default function DiscoverPage() {
     try {
       setStatus('loading');
       setError('');
+      setSaveError('');
       setSavedMessage('');
+      setSavedMessageTone('success');
 
       const url = `${API_BASE_URL}/api/external/lastfm/search?artist=${encodeURIComponent(
         artist.trim(),
@@ -59,9 +64,12 @@ export default function DiscoverPage() {
   }
 
   async function addToWishlist(result) {
+    const normalizedName = result.name.trim().toLowerCase();
+
     setSavingArtist(result.name);
     setSavedMessage('');
-    setError('');
+    setSavedMessageTone('success');
+    setSaveError('');
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/me/wishlist`, {
@@ -78,8 +86,14 @@ export default function DiscoverPage() {
       });
 
       if (response.status === 401) {
-        setError('Sign in to save artists.');
-        setStatus('error');
+        setSaveError('Sign in to save artists.');
+        return;
+      }
+
+      if (response.status === 409) {
+        setSavedArtists((current) => new Set(current).add(normalizedName));
+        setSavedMessage('Already in your wishlist.');
+        setSavedMessageTone('warning');
         return;
       }
 
@@ -87,10 +101,11 @@ export default function DiscoverPage() {
         throw new Error(`Backend returned ${response.status}`);
       }
 
+      setSavedArtists((current) => new Set(current).add(normalizedName));
       setSavedMessage(`${result.name} was added to your Setlist Social wishlist.`);
+      setSavedMessageTone('success');
     } catch {
-      setError('Could not add this artist to your wishlist.');
-      setStatus('error');
+      setSaveError('Could not save this artist. Check that the backend is running and try again.');
     } finally {
       setSavingArtist('');
     }
@@ -133,9 +148,22 @@ export default function DiscoverPage() {
 
       {status === 'error' ? <ErrorState title="Search unavailable" message={error} /> : null}
 
+      {saveError ? (
+        <section className="state-panel error-panel" role="alert" aria-live="polite">
+          <h2>Could not save artist</h2>
+          <p>{saveError}</p>
+        </section>
+      ) : null}
+
       {savedMessage ? (
-        <section className="state-panel success-panel" role="status" aria-live="polite">
-          <h2>Saved</h2>
+        <section
+          className={`state-panel ${
+            savedMessageTone === 'warning' ? 'warning-panel' : 'success-panel'
+          }`}
+          role="status"
+          aria-live="polite"
+        >
+          <h2>{savedMessageTone === 'warning' ? 'Already saved' : 'Saved'}</h2>
           <p>{savedMessage}</p>
         </section>
       ) : null}
@@ -163,35 +191,48 @@ export default function DiscoverPage() {
             )}
           </div>
           <div className="card-grid">
-            {results.map((result) => (
-              <article className="data-card artist-result-card" key={`${result.name}-${result.url}`}>
-                {result.imageUrl ? (
-                  <img alt="" className="artist-image" src={result.imageUrl} />
-                ) : null}
-                <div>
-                  <p className="card-kicker">Last.fm artist</p>
-                  <h2>{result.name}</h2>
-                  <p className="card-detail">
-                    {result.listeners?.toLocaleString() ?? 'Unknown'} listeners
-                  </p>
-                </div>
-                {result.url ? (
-                  <a className="text-link" href={result.url} rel="noreferrer" target="_blank">
-                    View on Last.fm
-                  </a>
-                ) : null}
-                {authStatus === 'signed-in' ? (
-                  <button
-                    className="button secondary-button"
-                    disabled={savingArtist === result.name}
-                    onClick={() => addToWishlist(result)}
-                    type="button"
-                  >
-                    {savingArtist === result.name ? 'Adding...' : 'Add to wishlist'}
-                  </button>
-                ) : null}
-              </article>
-            ))}
+            {results.map((result) => {
+              const isSaved = savedArtists.has(result.name.trim().toLowerCase());
+
+              return (
+                <article className="data-card artist-result-card" key={`${result.name}-${result.url}`}>
+                  {result.imageUrl ? (
+                    <img alt="" className="artist-image" src={result.imageUrl} />
+                  ) : null}
+                  <div>
+                    <p className="card-kicker">Last.fm artist</p>
+                    <h2>{result.name}</h2>
+                    <p className="card-detail">
+                      {result.listeners?.toLocaleString() ?? 'Unknown'} listeners
+                    </p>
+                  </div>
+                  {result.url ? (
+                    <a
+                      className="text-link"
+                      href={result.url}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      View on Last.fm
+                    </a>
+                  ) : null}
+                  {authStatus === 'signed-in' ? (
+                    <button
+                      className="button secondary-button"
+                      disabled={savingArtist === result.name || isSaved}
+                      onClick={() => addToWishlist(result)}
+                      type="button"
+                    >
+                      {isSaved
+                        ? 'In wishlist'
+                        : savingArtist === result.name
+                          ? 'Adding...'
+                          : 'Add to wishlist'}
+                    </button>
+                  ) : null}
+                </article>
+              );
+            })}
           </div>
         </section>
       ) : null}

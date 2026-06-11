@@ -569,6 +569,11 @@ select {
   background: #f4fbf6;
 }
 
+.warning-panel {
+  border-color: #f0b8bd;
+  background: #fff4f4;
+}
+
 .loading-dot {
   animation: pulse 1s ease-in-out infinite;
   background: #b23a48;

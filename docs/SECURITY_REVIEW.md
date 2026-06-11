@@ -17,6 +17,7 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 - Non-owned concert ids return `404 Not Found` instead of `403 Forbidden` to avoid revealing whether another user's concert exists.
 - `GET/POST/DELETE /api/me/wishlist` endpoints are scoped to the current signed-in user's `UserProfile`.
 - Non-owned wishlist item ids return `404 Not Found` instead of `403 Forbidden` to avoid revealing whether another user's wishlist item exists.
+- Duplicate wishlist saves return `409 Conflict` for the signed-in user's own duplicate artist, without creating another row.
 - Backend integration tests cover unauthenticated `401` responses and My Concerts user isolation with a test-only auth scheme.
 - The frontend has protected route guards for dashboard/profile/concerts/wishlist/settings placeholder pages.
 - Public endpoints remain public.

@@ -15,6 +15,7 @@ export default function WishlistPage() {
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteSuccessMessage, setDeleteSuccessMessage] = useState('');
 
   async function loadWishlist(signal) {
     try {
@@ -56,8 +57,13 @@ export default function WishlistPage() {
   }, []);
 
   async function deleteWishlistItem(id) {
+    if (!window.confirm('Are you sure you want to remove this artist from your wishlist?')) {
+      return;
+    }
+
     setDeletingId(id);
     setError('');
+    setDeleteSuccessMessage('');
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/me/wishlist/${id}`, {
@@ -67,7 +73,6 @@ export default function WishlistPage() {
 
       if (response.status === 401) {
         setError('Sign in again before deleting wishlist items.');
-        setStatus('error');
         return;
       }
 
@@ -76,9 +81,10 @@ export default function WishlistPage() {
       }
 
       await loadWishlist();
+      setDeleteSuccessMessage('Wishlist item removed successfully.');
+      setTimeout(() => setDeleteSuccessMessage(''), 2000);
     } catch {
       setError('Could not delete this wishlist item.');
-      setStatus('error');
     } finally {
       setDeletingId(null);
     }
@@ -104,6 +110,13 @@ export default function WishlistPage() {
         />
       ) : null}
 
+      {deleteSuccessMessage ? (
+        <section className="state-panel success-panel" role="status" aria-live="polite">
+          <h2>Removed</h2>
+          <p>{deleteSuccessMessage}</p>
+        </section>
+      ) : null}
+
       {status === 'success' && items.length > 0 ? (
         <section className="content-section" aria-labelledby="wishlist-heading">
           <div>
@@ -120,7 +133,12 @@ export default function WishlistPage() {
                   <h2>{item.artistName}</h2>
                   <p className="card-detail">Saved {formatSavedDate(item.createdAt)}</p>
                   {item.sourceUrl ? (
-                    <a className="text-link" href={item.sourceUrl} rel="noreferrer" target="_blank">
+                    <a
+                      className="text-link"
+                      href={item.sourceUrl}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
                       View source
                     </a>
                   ) : null}
