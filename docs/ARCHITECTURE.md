@@ -38,6 +38,8 @@ Database provider selection is environment-aware:
 - Development/local default: SQLite through `ConnectionStrings__DefaultConnection` in `appsettings.Development.json`
 - Production: PostgreSQL through `ConnectionStrings__DefaultConnection`
 
+Production migrations are EF Core migrations. They can be applied manually, or the backend can apply them on startup when `Database__RunMigrationsOnStartup=true` is configured. That startup option is disabled by default and does not seed, reset, or drop data.
+
 Development seed/reset endpoints are only mapped in `Development`, and full-scale simulated data is not seeded automatically on production startup.
 
 ## Current Request Flow

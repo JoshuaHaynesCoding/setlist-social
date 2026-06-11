@@ -98,6 +98,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+await ApplyMigrationsOnStartupAsync(app);
+
 if (GetAllowedFrontendOrigins(app.Configuration, app.Environment).Count > 0)
 {
     app.UseCors(FrontendCorsPolicy);
@@ -1209,6 +1211,25 @@ static string FormatConcertDisplayText(string artistName, string? venueName)
 static Task BroadcastActivityAsync(IHubContext<ActivityHub> activityHub, PublicActivityEventResponse activity)
 {
     return activityHub.Clients.All.SendAsync("activityCreated", activity);
+}
+
+static async Task ApplyMigrationsOnStartupAsync(WebApplication app)
+{
+    if (!app.Configuration.GetValue<bool>("Database:RunMigrationsOnStartup"))
+    {
+        return;
+    }
+
+    var logger = app.Services.GetRequiredService<ILoggerFactory>()
+        .CreateLogger("DatabaseMigrations");
+
+    logger.LogInformation("Applying EF Core database migrations on startup.");
+
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+
+    logger.LogInformation("EF Core database migrations completed.");
 }
 
 static List<string> GetAllowedFrontendOrigins(IConfiguration configuration, IHostEnvironment environment)

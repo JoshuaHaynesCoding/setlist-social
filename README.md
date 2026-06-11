@@ -107,6 +107,7 @@ Backend environment variables:
 
 ```text
 ConnectionStrings__DefaultConnection
+Database__RunMigrationsOnStartup
 Google__ClientId
 Google__ClientSecret
 FrontendUrl
@@ -124,6 +125,7 @@ Production notes:
 - Local development defaults to SQLite through `backend/appsettings.Development.json`.
 - Production uses PostgreSQL through `ConnectionStrings__DefaultConnection`.
 - The backend reads Render's `PORT` environment variable when present.
+- Set `Database__RunMigrationsOnStartup=true` on Render if you want the backend to apply EF Core migrations when the service starts.
 - Do not run development seed/reset endpoints in production; they are only mapped in `Development`.
 - Apply EF Core migrations to the production PostgreSQL database as a deliberate deployment step.
 

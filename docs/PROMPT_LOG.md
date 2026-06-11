@@ -232,3 +232,14 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Changed: Updated backend startup/database configuration, design-time EF configuration, backend Docker files, README deployment notes, architecture notes, and prompt log.
 - Rejected: Deployment credentials, real connection strings, OAuth behavior changes, schema changes, automatic production migrations, and production seed/reset.
 - Tested: `dotnet build backend/SetlistSocial.Api.csproj`, `dotnet test backend.tests/SetlistSocial.Api.Tests.csproj`, `npm test`, and `npm run build` passed.
+
+## 2026-06-11 - Render Production Migration Startup Option
+
+- Tool: ChatGPT/Codex
+- Goal: Fix missing PostgreSQL tables on Render by applying EF Core migrations safely.
+- Prompt: Add an explicit opt-in production migration startup option using `Database__RunMigrationsOnStartup=true`.
+- Result: Added a startup migration hook that creates a scope and calls `db.Database.MigrateAsync()` only when the config flag is enabled.
+- Accepted: EF Core migrations, disabled by default, startup logging, no `EnsureCreated`, and no production seed/reset.
+- Changed: Updated backend startup and deployment documentation.
+- Rejected: Secrets, connection strings in code, dropping/resetting production data, OAuth changes, schema changes, and automatic destructive operations.
+- Tested: `dotnet build backend/SetlistSocial.Api.csproj`, `dotnet test backend.tests/SetlistSocial.Api.Tests.csproj`, `npm test`, and `npm run build` passed.

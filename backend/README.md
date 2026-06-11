@@ -40,6 +40,7 @@ Required production backend environment variables:
 
 ```text
 ConnectionStrings__DefaultConnection
+Database__RunMigrationsOnStartup
 Google__ClientId
 Google__ClientSecret
 FrontendUrl
@@ -55,6 +56,8 @@ Database__Provider=PostgreSQL
 For Render, set `ConnectionStrings__DefaultConnection` to a PostgreSQL connection string in Npgsql format, for example using keys such as `Host`, `Database`, `Username`, `Password`, and `SSL Mode`. Do not commit the real value.
 
 The app reads Render's `PORT` environment variable automatically. Locally, `dotnet run` still uses the normal ASP.NET Core launch settings.
+
+If `Database__RunMigrationsOnStartup=true`, the backend applies EF Core migrations during startup. This is disabled by default. It does not call `EnsureCreated`, does not reset data, and does not run development seed endpoints.
 
 ## Authentication Configuration
 
@@ -127,7 +130,7 @@ Render deployment option:
 1. Create or attach a PostgreSQL database.
 2. Create a Render web service for the backend using `backend/Dockerfile`.
 3. Set the backend environment variables listed above.
-4. Run EF Core migrations against the PostgreSQL database as a manual release step.
+4. Run EF Core migrations against the PostgreSQL database as a manual release step, or set `Database__RunMigrationsOnStartup=true` so the service applies migrations when it starts.
 5. Confirm `GET /api/health` returns `{ "status": "ok" }`.
 
 ## Run Locally
