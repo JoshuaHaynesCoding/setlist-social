@@ -68,10 +68,26 @@ jobs:
       - backend
       - frontend
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: setlist_social_e2e
+          POSTGRES_USER: setlist_social
+          POSTGRES_PASSWORD: setlist_social_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U setlist_social -d setlist_social_e2e"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       ASPNETCORE_ENVIRONMENT: Development
-      E2E_DB_PATH: ${{ github.workspace }}/setlist-social-e2e.db
-      ConnectionStrings__DefaultConnection: Data Source=${{ github.workspace }}/setlist-social-e2e.db
+      E2E_DB_CONNECTION: Host=127.0.0.1;Port=5432;Database=setlist_social_e2e;Username=setlist_social;Password=setlist_social_e2e
+      ConnectionStrings__DefaultConnection: Host=127.0.0.1;Port=5432;Database=setlist_social_e2e;Username=setlist_social;Password=setlist_social_e2e
+      Database__Provider: PostgreSQL
       E2E__EnableTestAuth: "true"
       Google__ClientId: e2e-test-client-id
       Google__ClientSecret: e2e-test-client-secret
@@ -98,14 +114,10 @@ jobs:
       - name: Install EF Core CLI
         run: dotnet tool install --global dotnet-ef --version 10.0.9
 
-      - name: Reset E2E SQLite database
-        run: |
-          echo "Resetting E2E SQLite database at ${E2E_DB_PATH}"
-          rm -f "${E2E_DB_PATH}"
-
       - name: Apply E2E database migrations
         env:
-          ConnectionStrings__DefaultConnection: Data Source=${{ github.workspace }}/setlist-social-e2e.db
+          ConnectionStrings__DefaultConnection: Host=127.0.0.1;Port=5432;Database=setlist_social_e2e;Username=setlist_social;Password=setlist_social_e2e
+          Database__Provider: PostgreSQL
         run: dotnet ef database update --project backend/SetlistSocial.Api.csproj --startup-project backend/SetlistSocial.Api.csproj
 
       - name: Install frontend dependencies
@@ -121,11 +133,12 @@ jobs:
           echo "Backend health URL: http://127.0.0.1:5050/api/health"
           echo "Frontend URL: http://127.0.0.1:5173"
           echo "E2E test auth enabled: ${E2E__EnableTestAuth}"
-          echo "SQLite database path: ${E2E_DB_PATH}"
-          echo "SQLite connection string path: ${ConnectionStrings__DefaultConnection}"
+          echo "E2E database provider: ${Database__Provider}"
+          echo "E2E database connection target: Host=127.0.0.1;Port=5432;Database=setlist_social_e2e;Username=setlist_social"
 
       - name: Run Playwright E2E tests
         working-directory: frontend
         env:
-          ConnectionStrings__DefaultConnection: Data Source=${{ github.workspace }}/setlist-social-e2e.db
+          ConnectionStrings__DefaultConnection: Host=127.0.0.1;Port=5432;Database=setlist_social_e2e;Username=setlist_social;Password=setlist_social_e2e
+          Database__Provider: PostgreSQL
         run: npm run e2e

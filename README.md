@@ -97,7 +97,7 @@ npx playwright install --with-deps chromium
 npm run e2e
 ```
 
-The E2E job uses `E2E__EnableTestAuth=true` with a local SQLite database on the CI runner. It does not require Google OAuth credentials or other secrets.
+The E2E job uses `E2E__EnableTestAuth=true` with an ephemeral PostgreSQL service on the CI runner. It does not require Google OAuth credentials or other secrets.
 
 ## Deployment Configuration
 

@@ -1,14 +1,11 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { defineConfig, devices } from '@playwright/test';
 
 const backendUrl = 'http://127.0.0.1:5050';
 const frontendUrl = 'http://127.0.0.1:5173';
-const configDirectory = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(configDirectory, '..');
-const localE2eDatabasePath = path.join(repoRoot, 'setlist-social-e2e.db');
 const e2eConnectionString =
-  process.env.ConnectionStrings__DefaultConnection ?? `Data Source=${localE2eDatabasePath}`;
+  process.env.ConnectionStrings__DefaultConnection ??
+  'Host=127.0.0.1;Port=5432;Database=setlist_social_e2e;Username=setlist_social;Password=setlist_social_e2e';
+const e2eDatabaseProvider = process.env.Database__Provider ?? 'PostgreSQL';
 
 export default defineConfig({
   testDir: './e2e',
@@ -27,6 +24,7 @@ export default defineConfig({
       env: {
         ASPNETCORE_ENVIRONMENT: 'Development',
         ConnectionStrings__DefaultConnection: e2eConnectionString,
+        Database__Provider: e2eDatabaseProvider,
         E2E__EnableTestAuth: 'true',
         Google__ClientId: 'e2e-test-client-id',
         Google__ClientSecret: 'e2e-test-client-secret',
