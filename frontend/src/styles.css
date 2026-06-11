@@ -337,6 +337,37 @@ select {
   gap: 12px;
 }
 
+.live-status {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #dde3ee;
+  border-radius: 999px;
+  color: #526174;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 800;
+  justify-self: start;
+  margin: -10px 0 0;
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+.live-status-connected {
+  border-color: #9fd3b0;
+  color: #237044;
+}
+
+.live-status-reconnecting,
+.live-status-connecting {
+  border-color: #e7c86c;
+  color: #85620b;
+}
+
+.live-status-unavailable {
+  border-color: #f0b8bd;
+  color: #9f2534;
+}
+
 .activity-card {
   display: grid;
   gap: 14px;

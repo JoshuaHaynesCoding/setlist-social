@@ -11,11 +11,11 @@ export default function AboutPage() {
       <div className="info-grid">
         <article className="info-block">
           <h2>Current foundation</h2>
-          <p>React, Vite, React Router, ASP.NET Core Minimal API, EF Core, SQLite local development, and public Last.fm artist search.</p>
+          <p>React, Vite, React Router, ASP.NET Core Minimal API, EF Core, SQLite local development, public Last.fm artist search, and SignalR activity updates.</p>
         </article>
         <article className="info-block">
           <h2>Planned later</h2>
-          <p>Deeper Last.fm features, SignalR activity updates, and production deployment.</p>
+          <p>Deeper Last.fm features, broader protected workflows, and production deployment.</p>
         </article>
       </div>
     </section>

@@ -16,6 +16,7 @@ ASP.NET Core Minimal API targeting .NET 10.
 - Google OAuth/OIDC foundation with cookie authentication
 - Current user endpoint: `GET /api/me`
 - Public Last.fm artist search endpoint: `GET /api/external/lastfm/search?artist=ARTIST_NAME`
+- SignalR public activity hub: `/hubs/activity`
 
 ## Local Database
 
@@ -144,6 +145,5 @@ The seed process does not require external API access. The reset option clears l
 
 ## Not Implemented Yet
 
-- SignalR
 - Production PostgreSQL configuration
 - Full protected CRUD beyond the current My Concerts and Wishlist foundations

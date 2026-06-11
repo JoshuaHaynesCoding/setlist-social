@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository contains a working starter architecture with public pages, protected user-owned concert and wishlist foundations, a small Last.fm artist search integration, and local development seed/reset tooling.
+The repository contains a working starter architecture with public pages, protected user-owned concert and wishlist foundations, a small Last.fm artist search integration, SignalR public activity updates, and local development seed/reset tooling.
 
 ## Current Architecture
 
@@ -14,6 +14,7 @@ The repository contains a working starter architecture with public pages, protec
 - ORM/database: EF Core with SQLite local development and PostgreSQL provider support
 - External API: Last.fm artist search through the backend only
 - Current external endpoint: `GET /api/external/lastfm/search?artist=ARTIST_NAME`
+- Real-time: SignalR public activity hub at `/hubs/activity`
 - Development data: deterministic simulated local seed data for demo/testing scale
 
 ## Planned Architecture
@@ -22,18 +23,21 @@ The repository contains a working starter architecture with public pages, protec
 - ORM: EF Core
 - Local development database: SQLite
 - Production database: PostgreSQL
-- Real-time feature: SignalR live activity feed
 - Planned frontend deployment: Vercel
 - Planned backend deployment: Render
 - Planned production database hosting: Neon or Render PostgreSQL
 
-## Planned Request Flow
+## Current Request Flow
 
 1. React frontend calls the ASP.NET Core API.
 2. API validates authenticated requests through Google OAuth / OIDC.
 3. API reads and writes application data through EF Core.
 4. API calls Last.fm for public artist search without exposing the API key to the frontend.
-5. Planned: SignalR pushes live activity updates to connected frontend clients.
+5. SignalR pushes public-safe live activity updates to connected frontend clients.
+
+## Public Activity Privacy
+
+The public activity hub does not require authentication to connect. Broadcast payloads are limited to safe display fields: friendly activity type, message, display user handle/name, timestamp, and optional artist/concert display text. Private auth identifiers, OAuth subjects, emails, and private notes are not included.
 
 ## Development Seed Data
 
@@ -45,5 +49,4 @@ The full-scale seed reads real artist names from the curated local file at `docs
 
 - Full protected CRUD is not implemented beyond the current My Concerts and Wishlist foundations.
 - Last.fm is limited to public artist search.
-- SignalR is not implemented.
 - Deployment is not configured.

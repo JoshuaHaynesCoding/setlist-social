@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SetlistSocial.Api.Data;
 using SetlistSocial.Api.Development;
 using SetlistSocial.Api.External;
+using SetlistSocial.Api.Hubs;
 using SetlistSocial.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,6 +86,7 @@ builder.Services
 
 builder.Services.AddAuthorization();
 builder.Services.AddHttpClient<ILastFmClient, LastFmClient>();
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -103,6 +106,8 @@ app.UseAuthorization();
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok" }))
     .WithName("Health")
     .WithTags("Health");
+
+app.MapHub<ActivityHub>("/hubs/activity");
 
 app.MapGet("/api/auth/login", (IConfiguration configuration) =>
 {
@@ -332,7 +337,11 @@ app.MapGet("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal principal
     .WithName("MeConcert")
     .WithTags("My Concerts");
 
-app.MapPost("/api/me/concerts", async (ConcertRequest request, ClaimsPrincipal principal, AppDbContext db) =>
+app.MapPost("/api/me/concerts", async (
+    ConcertRequest request,
+    ClaimsPrincipal principal,
+    AppDbContext db,
+    IHubContext<ActivityHub> activityHub) =>
 {
     var userProfile = await GetCurrentUserProfileAsync(principal, db);
 
@@ -363,6 +372,16 @@ app.MapPost("/api/me/concerts", async (ConcertRequest request, ClaimsPrincipal p
     };
 
     db.Concerts.Add(concert);
+    var concertDisplayText = FormatConcertDisplayText(artist.Name, concert.VenueName);
+    var activityEvent = new ActivityEvent
+    {
+        EventType = "Added concert",
+        Summary = $"{userProfile.DisplayName} added {concertDisplayText}.",
+        UserProfileId = userProfile.Id,
+        Concert = concert,
+        CreatedAt = DateTimeOffset.UtcNow
+    };
+    db.ActivityEvents.Add(activityEvent);
     await db.SaveChangesAsync();
 
     var response = new ConcertResponse(
@@ -376,6 +395,16 @@ app.MapPost("/api/me/concerts", async (ConcertRequest request, ClaimsPrincipal p
         concert.ConcertDate,
         concert.CreatedAt,
         concert.UpdatedAt);
+
+    await BroadcastActivityAsync(
+        activityHub,
+        new PublicActivityEventResponse(
+            activityEvent.EventType,
+            activityEvent.Summary,
+            userProfile.DisplayName,
+            activityEvent.CreatedAt,
+            artist.Name,
+            concertDisplayText));
 
     return Results.Created($"/api/me/concerts/{concert.Id}", response);
 })
@@ -495,7 +524,11 @@ app.MapGet("/api/me/wishlist", async (ClaimsPrincipal principal, AppDbContext db
     .WithName("MeWishlist")
     .WithTags("My Wishlist");
 
-app.MapPost("/api/me/wishlist", async (WishlistItemRequest request, ClaimsPrincipal principal, AppDbContext db) =>
+app.MapPost("/api/me/wishlist", async (
+    WishlistItemRequest request,
+    ClaimsPrincipal principal,
+    AppDbContext db,
+    IHubContext<ActivityHub> activityHub) =>
 {
     var userProfile = await GetCurrentUserProfileAsync(principal, db);
 
@@ -553,6 +586,14 @@ app.MapPost("/api/me/wishlist", async (WishlistItemRequest request, ClaimsPrinci
     };
 
     db.WishlistItems.Add(wishlistItem);
+    var activityEvent = new ActivityEvent
+    {
+        EventType = "Saved artist",
+        Summary = $"{userProfile.DisplayName} saved {artist.Name} to their wishlist.",
+        UserProfileId = userProfile.Id,
+        CreatedAt = DateTimeOffset.UtcNow
+    };
+    db.ActivityEvents.Add(activityEvent);
     await db.SaveChangesAsync();
 
     var response = new WishlistItemResponse(
@@ -562,6 +603,16 @@ app.MapPost("/api/me/wishlist", async (WishlistItemRequest request, ClaimsPrinci
         wishlistItem.SourceName,
         wishlistItem.CreatedAt,
         wishlistItem.UpdatedAt);
+
+    await BroadcastActivityAsync(
+        activityHub,
+        new PublicActivityEventResponse(
+            activityEvent.EventType,
+            activityEvent.Summary,
+            userProfile.DisplayName,
+            activityEvent.CreatedAt,
+            artist.Name,
+            null));
 
     return Results.Created($"/api/me/wishlist/{wishlistItem.Id}", response);
 })
@@ -697,13 +748,29 @@ app.MapGet("/api/public/activity", async (AppDbContext db) =>
                 : activityEvent.UserProfile.DisplayName,
             ConcertTitle = activityEvent.Concert == null
                 ? null
-                : activityEvent.Concert.Title
+                : activityEvent.Concert.Title,
+            ArtistName = activityEvent.Concert == null
+                ? null
+                : activityEvent.Concert.Artist.Name
         })
         .ToListAsync();
 
     var activityDtos = activity
         .OrderByDescending(activityEvent => activityEvent.CreatedAt)
         .Take(25)
+        .Select(activityEvent => new
+        {
+            activityEvent.Id,
+            Type = activityEvent.EventType,
+            Message = activityEvent.Summary,
+            activityEvent.UserDisplayName,
+            activityEvent.CreatedAt,
+            ArtistDisplayText = activityEvent.ArtistName,
+            ConcertDisplayText = activityEvent.ConcertTitle,
+            activityEvent.EventType,
+            activityEvent.Summary,
+            activityEvent.ConcertTitle
+        })
         .ToList();
 
     return Results.Ok(activityDtos);
@@ -1038,6 +1105,18 @@ static string? TrimToNull(string? value)
     return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }
 
+static string FormatConcertDisplayText(string artistName, string? venueName)
+{
+    return string.IsNullOrWhiteSpace(venueName)
+        ? artistName
+        : $"{artistName} at {venueName.Trim()}";
+}
+
+static Task BroadcastActivityAsync(IHubContext<ActivityHub> activityHub, PublicActivityEventResponse activity)
+{
+    return activityHub.Clients.All.SendAsync("activityCreated", activity);
+}
+
 public sealed record ConcertRequest(
     string Title,
     string ArtistName,
@@ -1071,5 +1150,13 @@ public sealed record WishlistItemResponse(
     string? SourceName,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
+
+public sealed record PublicActivityEventResponse(
+    string Type,
+    string Message,
+    string? UserDisplayName,
+    DateTimeOffset CreatedAt,
+    string? ArtistDisplayText,
+    string? ConcertDisplayText);
 
 public partial class Program;

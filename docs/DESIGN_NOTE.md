@@ -15,6 +15,7 @@ Early product/design notes for the current Setlist Social demo foundation.
 - Public React routes for landing, about, stats, artists, activity, and discovery
 - Protected signed-in foundations for dashboard, profile, my concerts, wishlist, and settings
 - Simple card/list layouts intended to stay readable with larger local development data
+- Public activity page with initial loading plus live update connection status
 
 ## Simulated Taste Groups
 
@@ -27,6 +28,7 @@ These groups are for local development behavior only. They are not a finished re
 ## Planned Design Direction
 
 - Prioritize fast discovery of artists, events, and setlist activity
+- Keep live activity visible but restrained, with clear connected/unavailable status
 - Keep the interface clear enough for a class final project demo
 - Use accessible contrast, semantic layout, and responsive views
 

@@ -188,3 +188,14 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Changed: Updated full-scale seeder, seed endpoint wiring, backend README, architecture notes, design notes, and prompt log.
 - Rejected: OAuth changes, production auth changes, route changes, secrets, Last.fm calls in seeding, SignalR, and app rewrite.
 - Tested: `dotnet build backend/SetlistSocial.Api.csproj` and `npm run build` passed.
+
+## 2026-06-11 - SignalR Public Activity Updates
+
+- Tool: ChatGPT/Codex
+- Goal: Add live public activity updates when signed-in users create user-owned activity.
+- Prompt: Add SignalR support, map a public activity hub, broadcast safe public DTOs for concert/wishlist create activity, and update `/activity` to receive live updates without refresh.
+- Result: Added `/hubs/activity`, public-safe activity broadcasts, activity creation for concert and wishlist saves, and live Activity page connection status/deduping.
+- Accepted: Public unauthenticated hub connection, protected APIs unchanged, safe display-only payloads, and graceful frontend fallback if SignalR is unavailable.
+- Changed: Updated backend SignalR setup/hub, public activity DTOs, concert/wishlist activity creation, Activity page, styles, package dependencies, architecture/design docs, and prompt log.
+- Rejected: OAuth changes, secrets, deployment, route rewrites, private auth data in broadcasts, and full app rewrite.
+- Tested: `dotnet build backend/SetlistSocial.Api.csproj` and `npm run build` passed.
