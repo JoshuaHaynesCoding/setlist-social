@@ -3,8 +3,9 @@ import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 import StatCard from '../components/StatCard.jsx';
+import { API_BASE_URL } from '../api.js';
 
-const STATS_URL = 'http://localhost:5050/api/public/stats';
+const STATS_URL = `${API_BASE_URL}/api/public/stats`;
 
 const statLabels = [
   { key: 'users', label: 'Users', detail: 'Public user profiles' },
@@ -43,7 +44,7 @@ export default function StatsPage() {
           return;
         }
 
-        setError('Could not reach the backend at http://localhost:5050. Start the backend, apply migrations, and try again.');
+        setError(`Could not reach the backend at ${API_BASE_URL}. Start the backend, apply migrations, and try again.`);
         setStatus('error');
       }
     }

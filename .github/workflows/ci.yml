@@ -106,6 +106,13 @@ jobs:
         working-directory: frontend
         run: npx playwright install --with-deps chromium
 
+      - name: Show E2E configuration
+        run: |
+          echo "Backend health URL: http://127.0.0.1:5050/api/health"
+          echo "Frontend URL: http://127.0.0.1:5173"
+          echo "E2E test auth enabled: ${E2E__EnableTestAuth}"
+          echo "SQLite connection string path: ${ConnectionStrings__DefaultConnection}"
+
       - name: Run Playwright E2E tests
         working-directory: frontend
         run: npm run e2e

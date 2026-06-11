@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import EmptyState from '../components/EmptyState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import LoadingState from '../components/LoadingState.jsx';
+import { API_BASE_URL } from '../api.js';
 
-const ARTISTS_URL = 'http://localhost:5050/api/public/artists';
+const ARTISTS_URL = `${API_BASE_URL}/api/public/artists`;
 
 export default function ArtistsPage() {
   const [artists, setArtists] = useState([]);
@@ -32,7 +33,7 @@ export default function ArtistsPage() {
           return;
         }
 
-        setError('Could not reach the backend at http://localhost:5050. Start the backend and try again.');
+        setError(`Could not reach the backend at ${API_BASE_URL}. Start the backend and try again.`);
         setStatus('error');
       }
     }

@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const backendUrl = 'http://127.0.0.1:5050';
+const frontendUrl = 'http://127.0.0.1:5173';
+
 export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
@@ -7,25 +10,35 @@ export default defineConfig({
     timeout: 10_000,
   },
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: frontendUrl,
     trace: 'retain-on-failure',
   },
   webServer: [
     {
-      command: 'dotnet run --project ../backend/SetlistSocial.Api.csproj --urls http://localhost:5050',
+      command:
+        'dotnet run --project ../backend/SetlistSocial.Api.csproj --no-launch-profile --urls http://127.0.0.1:5050',
       env: {
         ASPNETCORE_ENVIRONMENT: 'Development',
+        ConnectionStrings__DefaultConnection:
+          process.env.ConnectionStrings__DefaultConnection ?? 'Data Source=../backend/setlist-social-dev.db',
         E2E__EnableTestAuth: 'true',
       },
+      stderr: 'pipe',
+      stdout: 'pipe',
       reuseExistingServer: false,
-      timeout: 120_000,
-      url: 'http://localhost:5050/api/health',
+      timeout: 240_000,
+      url: `${backendUrl}/api/health`,
     },
     {
-      command: 'npm run dev -- --host 127.0.0.1',
+      command: 'npm run dev -- --host 127.0.0.1 --port 5173 --strictPort',
+      env: {
+        VITE_API_BASE_URL: backendUrl,
+      },
+      stderr: 'pipe',
+      stdout: 'pipe',
       reuseExistingServer: false,
-      timeout: 120_000,
-      url: 'http://localhost:5173',
+      timeout: 240_000,
+      url: frontendUrl,
     },
   ],
   projects: [

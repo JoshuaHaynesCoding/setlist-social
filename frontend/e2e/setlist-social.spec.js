@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const backendUrl = 'http://localhost:5050';
+const backendUrl = 'http://127.0.0.1:5050';
 
 test('public visitor can load landing, stats, and activity pages', async ({ page }) => {
   await page.goto('/');
