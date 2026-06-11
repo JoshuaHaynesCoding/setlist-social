@@ -52,6 +52,12 @@ Current signed-in user:
 curl -i http://localhost:5050/api/me
 ```
 
+## E2E Test Auth
+
+Playwright tests can start the backend with `E2E__EnableTestAuth=true` in the `Development` environment. That flag maps `POST /api/dev/auth/test-login` for automated browser tests only.
+
+Do not enable `E2E__EnableTestAuth` for normal local demos or production. Google OAuth remains the real application login path.
+
 ## Last.fm Configuration
 
 Set the Last.fm API key with user-secrets for local development. Do not commit real values.

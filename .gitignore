@@ -13,6 +13,8 @@ pnpm-debug.log*
 # Vite / frontend builds
 dist/
 build/
+playwright-report/
+test-results/
 
 # .NET
 bin/

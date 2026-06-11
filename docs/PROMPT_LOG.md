@@ -199,3 +199,14 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Changed: Updated backend SignalR setup/hub, public activity DTOs, concert/wishlist activity creation, Activity page, styles, package dependencies, architecture/design docs, and prompt log.
 - Rejected: OAuth changes, secrets, deployment, route rewrites, private auth data in broadcasts, and full app rewrite.
 - Tested: `dotnet build backend/SetlistSocial.Api.csproj` and `npm run build` passed.
+
+## 2026-06-11 - Playwright E2E Tests
+
+- Tool: ChatGPT/Codex
+- Goal: Add end-to-end coverage for public pages, protected route blocking, and signed-in concert CRUD.
+- Prompt: Set up Playwright, add at least three critical E2E scenarios, and use a documented test-mode auth approach if real Google OAuth is too heavy.
+- Result: Added Playwright config, three E2E tests, and a development/test-only `E2E__EnableTestAuth` login endpoint for automated browser testing.
+- Accepted: Public visitor flow, unauthenticated protected-route block, signed-in test user create/refresh/delete concert flow, and documented E2E test command.
+- Changed: Added Playwright dependency/config/specs, frontend scripts/docs, backend gated E2E auth endpoint, backend docs, and prompt log.
+- Rejected: Production auth changes, secrets, schema changes, deployment, app rewrite, and real Google OAuth in automated E2E.
+- Tested: `npm run e2e`, `npm test`, `npm run build`, and `dotnet build backend/SetlistSocial.Api.csproj` passed.

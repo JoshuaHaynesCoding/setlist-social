@@ -34,6 +34,20 @@ npm install
 npm run dev
 ```
 
+Run frontend unit tests:
+
+```bash
+npm test
+```
+
+Run Playwright end-to-end tests:
+
+```bash
+npm run e2e
+```
+
+The Playwright config starts the backend and frontend locally. For the signed-in E2E flow, the backend is started with `E2E__EnableTestAuth=true`, which enables a development/test-only login endpoint for automated tests.
+
 Open:
 
 ```text

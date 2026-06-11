@@ -182,6 +182,64 @@ app.MapPost("/api/auth/logout", async (HttpContext context) =>
     .WithName("AuthLogout")
     .WithTags("Auth");
 
+if ((app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
+    && app.Configuration.GetValue<bool>("E2E:EnableTestAuth"))
+{
+    app.MapPost("/api/dev/auth/test-login", async (
+        HttpContext context,
+        AppDbContext db,
+        string? subject,
+        string? displayName,
+        bool? reset) =>
+    {
+        var oauthSubject = string.IsNullOrWhiteSpace(subject)
+            ? "e2e-test-user"
+            : $"e2e-{subject.Trim()}";
+        var safeDisplayName = string.IsNullOrWhiteSpace(displayName)
+            ? "@e2etester"
+            : displayName.Trim();
+
+        var userProfile = await db.UserProfiles
+            .SingleOrDefaultAsync(user => user.OAuthSubject == oauthSubject);
+
+        if (userProfile is null)
+        {
+            userProfile = new UserProfile
+            {
+                DisplayName = safeDisplayName,
+                OAuthSubject = oauthSubject
+            };
+
+            db.UserProfiles.Add(userProfile);
+            await db.SaveChangesAsync();
+        }
+        else
+        {
+            userProfile.DisplayName = safeDisplayName;
+            await db.SaveChangesAsync();
+        }
+
+        if (reset == true)
+        {
+            await ResetE2EUserDataAsync(db, userProfile.Id);
+        }
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, oauthSubject),
+            new Claim(ClaimTypes.Name, safeDisplayName)
+        };
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        return Results.Ok(new { status = "signed-in", displayName = safeDisplayName });
+    })
+        .WithName("E2ETestLogin")
+        .WithTags("Development");
+}
+
 app.MapGet("/api/me", async (ClaimsPrincipal principal, AppDbContext db) =>
 {
     if (principal.Identity?.IsAuthenticated != true)
@@ -1103,6 +1161,27 @@ static void AddMaxLengthError(
 static string? TrimToNull(string? value)
 {
     return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+}
+
+static async Task ResetE2EUserDataAsync(AppDbContext db, int userProfileId)
+{
+    var concerts = await db.Concerts
+        .Include(concert => concert.Tags)
+        .Where(concert => concert.UserProfileId == userProfileId)
+        .ToListAsync();
+
+    await db.ActivityEvents
+        .Where(activityEvent => activityEvent.UserProfileId == userProfileId)
+        .ExecuteDeleteAsync();
+    await db.Reviews
+        .Where(review => review.UserProfileId == userProfileId)
+        .ExecuteDeleteAsync();
+    await db.WishlistItems
+        .Where(item => item.UserProfileId == userProfileId)
+        .ExecuteDeleteAsync();
+
+    db.Concerts.RemoveRange(concerts);
+    await db.SaveChangesAsync();
 }
 
 static string FormatConcertDisplayText(string artistName, string? venueName)
