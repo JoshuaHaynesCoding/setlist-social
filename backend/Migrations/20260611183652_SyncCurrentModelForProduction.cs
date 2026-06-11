@@ -25,13 +25,11 @@ namespace SetlistSocial.Api.Migrations
                 oldClrType: typeof(int),
                 oldType: "INTEGER");
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "UpdatedAt",
-                table: "WishlistItems",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "WishlistItems"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "SourceUrl",
@@ -66,13 +64,11 @@ namespace SetlistSocial.Api.Migrations
                 oldMaxLength: 1000,
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "CreatedAt",
-                table: "WishlistItems",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "WishlistItems"
+                ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "ArtistId",
@@ -92,13 +88,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "INTEGER")
                 .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "UpdatedAt",
-                table: "UserProfiles",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "UserProfiles"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "OAuthSubject",
@@ -120,13 +114,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "TEXT",
                 oldMaxLength: 120);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "CreatedAt",
-                table: "UserProfiles",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "UserProfiles"
+                ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Bio",
@@ -146,13 +138,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "INTEGER")
                 .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "UpdatedAt",
-                table: "Tags",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Tags"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
@@ -164,13 +154,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "TEXT",
                 oldMaxLength: 80);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "CreatedAt",
-                table: "Tags",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Tags"
+                ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -189,13 +177,11 @@ namespace SetlistSocial.Api.Migrations
                 oldClrType: typeof(int),
                 oldType: "INTEGER");
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "UpdatedAt",
-                table: "Reviews",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Reviews"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "Rating",
@@ -205,13 +191,11 @@ namespace SetlistSocial.Api.Migrations
                 oldClrType: typeof(int),
                 oldType: "INTEGER");
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "CreatedAt",
-                table: "Reviews",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Reviews"
+                ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "ConcertId",
@@ -276,13 +260,11 @@ namespace SetlistSocial.Api.Migrations
                 oldClrType: typeof(int),
                 oldType: "INTEGER");
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "UpdatedAt",
-                table: "Concerts",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Concerts"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Title",
@@ -305,13 +287,11 @@ namespace SetlistSocial.Api.Migrations
                 oldMaxLength: 120,
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "CreatedAt",
-                table: "Concerts",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Concerts"
+                ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Country",
@@ -324,13 +304,11 @@ namespace SetlistSocial.Api.Migrations
                 oldMaxLength: 120,
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "ConcertDate",
-                table: "Concerts",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Concerts"
+                ALTER COLUMN "ConcertDate" TYPE timestamp with time zone
+                USING "ConcertDate" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "City",
@@ -360,13 +338,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "INTEGER")
                 .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "UpdatedAt",
-                table: "Artists",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Artists"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp with time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
@@ -387,13 +363,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "TEXT",
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "CreatedAt",
-                table: "Artists",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Artists"
+                ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -433,13 +407,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "TEXT",
                 oldMaxLength: 80);
 
-            migrationBuilder.AlterColumn<DateTimeOffset>(
-                name: "CreatedAt",
-                table: "ActivityEvents",
-                type: "timestamp with time zone",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
+            migrationBuilder.Sql("""
+                ALTER TABLE "ActivityEvents"
+                ALTER COLUMN "CreatedAt" TYPE timestamp with time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "ConcertId",
@@ -476,13 +448,11 @@ namespace SetlistSocial.Api.Migrations
                 oldClrType: typeof(int),
                 oldType: "integer");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "UpdatedAt",
-                table: "WishlistItems",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "WishlistItems"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "SourceUrl",
@@ -517,13 +487,11 @@ namespace SetlistSocial.Api.Migrations
                 oldMaxLength: 1000,
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "CreatedAt",
-                table: "WishlistItems",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "WishlistItems"
+                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "ArtistId",
@@ -543,13 +511,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "integer")
                 .OldAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "UpdatedAt",
-                table: "UserProfiles",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "UserProfiles"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "OAuthSubject",
@@ -571,13 +537,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "character varying(120)",
                 oldMaxLength: 120);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "CreatedAt",
-                table: "UserProfiles",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "UserProfiles"
+                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Bio",
@@ -597,13 +561,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "integer")
                 .OldAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "UpdatedAt",
-                table: "Tags",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Tags"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
@@ -615,13 +577,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "character varying(80)",
                 oldMaxLength: 80);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "CreatedAt",
-                table: "Tags",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Tags"
+                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -640,13 +600,11 @@ namespace SetlistSocial.Api.Migrations
                 oldClrType: typeof(int),
                 oldType: "integer");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "UpdatedAt",
-                table: "Reviews",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Reviews"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "Rating",
@@ -656,13 +614,11 @@ namespace SetlistSocial.Api.Migrations
                 oldClrType: typeof(int),
                 oldType: "integer");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "CreatedAt",
-                table: "Reviews",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Reviews"
+                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "ConcertId",
@@ -727,13 +683,11 @@ namespace SetlistSocial.Api.Migrations
                 oldClrType: typeof(int),
                 oldType: "integer");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "UpdatedAt",
-                table: "Concerts",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Concerts"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Title",
@@ -756,13 +710,11 @@ namespace SetlistSocial.Api.Migrations
                 oldMaxLength: 120,
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "CreatedAt",
-                table: "Concerts",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Concerts"
+                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Country",
@@ -775,13 +727,11 @@ namespace SetlistSocial.Api.Migrations
                 oldMaxLength: 120,
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "ConcertDate",
-                table: "Concerts",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Concerts"
+                ALTER COLUMN "ConcertDate" TYPE timestamp without time zone
+                USING "ConcertDate" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "City",
@@ -811,13 +761,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "integer")
                 .OldAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "UpdatedAt",
-                table: "Artists",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Artists"
+                ALTER COLUMN "UpdatedAt" TYPE timestamp without time zone
+                USING "UpdatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
@@ -838,13 +786,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "text",
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "CreatedAt",
-                table: "Artists",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "Artists"
+                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -884,13 +830,11 @@ namespace SetlistSocial.Api.Migrations
                 oldType: "character varying(80)",
                 oldMaxLength: 80);
 
-            migrationBuilder.AlterColumn<string>(
-                name: "CreatedAt",
-                table: "ActivityEvents",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(DateTimeOffset),
-                oldType: "timestamp with time zone");
+            migrationBuilder.Sql("""
+                ALTER TABLE "ActivityEvents"
+                ALTER COLUMN "CreatedAt" TYPE timestamp without time zone
+                USING "CreatedAt" AT TIME ZONE 'UTC';
+                """);
 
             migrationBuilder.AlterColumn<int>(
                 name: "ConcertId",
