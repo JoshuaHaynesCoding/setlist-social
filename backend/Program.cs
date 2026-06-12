@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using SetlistSocial.Api.Data;
 using SetlistSocial.Api.Development;
@@ -96,6 +97,27 @@ builder.Services
 
         // Google handles this internal callback, then redirects to /api/auth/callback.
         options.CallbackPath = "/api/auth/google-callback";
+
+        options.Events.OnRedirectToAuthorizationEndpoint = context =>
+        {
+            var frontendCallbackUri = BuildFrontendGoogleCallbackUri(
+                builder.Configuration["FrontendUrl"],
+                options.CallbackPath);
+
+            if (frontendCallbackUri is null)
+            {
+                context.Response.Redirect(context.RedirectUri);
+                return Task.CompletedTask;
+            }
+
+            var authorizationUri = ReplaceQueryParameter(
+                context.RedirectUri,
+                "redirect_uri",
+                frontendCallbackUri);
+
+            context.Response.Redirect(authorizationUri);
+            return Task.CompletedTask;
+        };
     });
 
 builder.Services.AddAuthorization();
@@ -1301,6 +1323,39 @@ static List<string> GetAllowedFrontendOrigins(IConfiguration configuration, IHos
     }
 
     return origins.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+}
+
+static string? BuildFrontendGoogleCallbackUri(string? frontendUrl, PathString callbackPath)
+{
+    if (string.IsNullOrWhiteSpace(frontendUrl)
+        || !Uri.TryCreate(frontendUrl.Trim().TrimEnd('/'), UriKind.Absolute, out var frontendUri))
+    {
+        return null;
+    }
+
+    return new Uri(frontendUri, callbackPath.Value ?? "/api/auth/google-callback").ToString();
+}
+
+static string ReplaceQueryParameter(string uri, string key, string value)
+{
+    var uriBuilder = new UriBuilder(uri);
+    var queryParameters = QueryHelpers.ParseQuery(uriBuilder.Query)
+        .SelectMany(
+            parameter => parameter.Value,
+            (parameter, parameterValue) => new KeyValuePair<string, string?>(
+                parameter.Key,
+                string.Equals(parameter.Key, key, StringComparison.OrdinalIgnoreCase)
+                    ? value
+                    : parameterValue))
+        .ToList();
+
+    if (!queryParameters.Any(parameter => string.Equals(parameter.Key, key, StringComparison.OrdinalIgnoreCase)))
+    {
+        queryParameters.Add(new KeyValuePair<string, string?>(key, value));
+    }
+
+    uriBuilder.Query = QueryString.Create(queryParameters).ToUriComponent().TrimStart('?');
+    return uriBuilder.Uri.ToString();
 }
 
 public sealed record ConcertRequest(
