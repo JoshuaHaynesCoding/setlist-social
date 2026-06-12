@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/AuthContext.jsx';
+import { API_BASE_URL } from '../api.js';
 
 export default function AuthStatus() {
   const { profile, signOut, status } = useAuth();
@@ -42,7 +43,7 @@ export default function AuthStatus() {
   }
 
   return (
-    <a className="auth-button" href="/api/auth/login">
+    <a className="auth-button" href={`${API_BASE_URL}/api/auth/login`}>
       Sign in with Google
     </a>
   );
