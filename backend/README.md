@@ -62,24 +62,28 @@ If `Database__RunMigrationsOnStartup=true`, the backend applies EF Core migratio
 
 If `Seed__RunOnStartup=true`, the backend runs a production-safe simulated seed after the migration startup step. This is disabled by default. It does not reset, delete, truncate, or drop data. It skips if generated seed users already exist, and it skips if domain data already exists so rows are not duplicated. Existing real OAuth users can remain in the database while simulated seed users are added.
 
-## Authentication Configuration
+## Local Authentication Configuration
 
-Set these values through environment variables or local user secrets. Do not commit real values.
+Set these values as environment variables when starting the backend. Do not commit real values.
 
 - `Google__ClientId`
 - `Google__ClientSecret`
 - `FrontendUrl`
+- `LastFm__ApiKey`
 
-For local development, prefer .NET user secrets:
+Local startup example:
 
 ```bash
-dotnet user-secrets set "Google:ClientId" "YOUR_GOOGLE_CLIENT_ID"
-dotnet user-secrets set "Google:ClientSecret" "YOUR_GOOGLE_CLIENT_SECRET"
-dotnet user-secrets set "FrontendUrl" "http://localhost:5173"
-dotnet user-secrets set "LastFm:ApiKey" "YOUR_LASTFM_API_KEY"
+ASPNETCORE_ENVIRONMENT=Development \
+ASPNETCORE_URLS=http://localhost:5050 \
+Google__ClientId="YOUR_GOOGLE_CLIENT_ID" \
+Google__ClientSecret="YOUR_GOOGLE_CLIENT_SECRET" \
+FrontendUrl="http://localhost:5173" \
+LastFm__ApiKey="YOUR_LASTFM_API_KEY" \
+dotnet run
 ```
 
-You can also set the same values as environment variables before `dotnet run`.
+The double underscore maps to nested ASP.NET Core configuration keys. For example, `Google__ClientId` is read by the app as `Google:ClientId`.
 
 Local login starts at:
 
@@ -101,11 +105,7 @@ Do not enable `E2E__EnableTestAuth` for normal local demos or production. Google
 
 ## Last.fm Configuration
 
-Set the Last.fm API key with user-secrets for local development. Do not commit real values.
-
-```bash
-dotnet user-secrets set "LastFm:ApiKey" "YOUR_LASTFM_API_KEY"
-```
+Set `LastFm__ApiKey` in the same backend startup command. Do not commit the real value.
 
 Artist search:
 

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import AuthStatus from '../components/AuthStatus.jsx';
 import ProtectedRoute from '../components/ProtectedRoute.jsx';
+import { API_BASE_URL } from '../api.js';
 import DiscoverPage from '../pages/DiscoverPage.jsx';
 import MyConcertsPage from '../pages/MyConcertsPage.jsx';
 import WishlistPage from '../pages/WishlistPage.jsx';
@@ -14,6 +15,8 @@ const authMock = vi.hoisted(() => ({
     status: 'signed-out',
   },
 }));
+
+const expectedLoginHref = `${API_BASE_URL}/api/auth/login`;
 
 vi.mock('../auth/AuthContext.jsx', () => ({
   useAuth: () => authMock.value,
@@ -59,7 +62,7 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Sign in required')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /sign in with google/i })).toHaveAttribute(
       'href',
-      '/api/auth/login',
+      expectedLoginHref,
     );
   });
 
@@ -80,7 +83,7 @@ describe('AuthStatus', () => {
 
     expect(screen.getByRole('link', { name: /sign in with google/i })).toHaveAttribute(
       'href',
-      '/api/auth/login',
+      expectedLoginHref,
     );
   });
 

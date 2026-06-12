@@ -46,6 +46,12 @@ Backend:
 ```bash
 cd backend
 dotnet restore
+ASPNETCORE_ENVIRONMENT=Development \
+ASPNETCORE_URLS=http://localhost:5050 \
+Google__ClientId="YOUR_GOOGLE_CLIENT_ID" \
+Google__ClientSecret="YOUR_GOOGLE_CLIENT_SECRET" \
+FrontendUrl="http://localhost:5173" \
+LastFm__ApiKey="YOUR_LASTFM_API_KEY" \
 dotnet run
 ```
 

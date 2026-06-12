@@ -171,6 +171,7 @@ export default function ActivityPage() {
       <p
         className={`live-status live-status-${liveStatus}`}
         role="status"
+        aria-label="Live updates"
         aria-live="polite"
       >
         {getLiveStatusText(liveStatus)}
