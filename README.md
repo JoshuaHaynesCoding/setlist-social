@@ -214,6 +214,7 @@ GitHub Actions runs backend build/tests, frontend tests/build, and Playwright E2
 
 ## Known Limitations
 
+- Image links provided by Last.fm API doess not return artists' avatars out of the box, they all return a blank star icon.
 - Last.fm integration is limited to public artist search; Last.fm user accounts and scrobbles are not connected.
 - Profile and settings pages are intentionally lightweight.
 - Reviews exist in the model and seed data, but full review CRUD is not implemented.
