@@ -85,7 +85,7 @@ public sealed class PublicWishlistAndExternalApiTests : IDisposable
         var otherClient = CreateAuthenticatedClient("wishlist-other");
         var deleteResponse = await otherClient.DeleteAsync($"/api/me/wishlist/{created.Id}");
 
-        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, deleteResponse.StatusCode);
 
         var ownerListResponse = await ownerClient.GetAsync("/api/me/wishlist");
         var ownerWishlist = await ownerListResponse.Content.ReadFromJsonAsync<List<WishlistItemDto>>();

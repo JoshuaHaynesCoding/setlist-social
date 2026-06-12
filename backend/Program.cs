@@ -392,22 +392,36 @@ app.MapGet("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal principal
 
     var concert = await db.Concerts
         .AsNoTracking()
-        .Where(concert => concert.Id == id && concert.UserProfileId == userProfile.Id)
-        .Select(concert => new ConcertResponse(
-            concert.Id,
-            concert.Title,
-            concert.Artist.Name,
-            concert.VenueName,
-            concert.City,
-            concert.Region,
-            concert.Country,
-            concert.ConcertDate,
-            concert.CreatedAt,
-            concert.UpdatedAt))
+        .Where(concert => concert.Id == id)
+        .Select(concert => new
+        {
+            Response = new ConcertResponse(
+                concert.Id,
+                concert.Title,
+                concert.Artist.Name,
+                concert.VenueName,
+                concert.City,
+                concert.Region,
+                concert.Country,
+                concert.ConcertDate,
+                concert.CreatedAt,
+                concert.UpdatedAt),
+            concert.UserProfileId
+        })
         .SingleOrDefaultAsync();
 
-    // Non-owned ids return 404 to avoid revealing whether another user's concert exists.
-    return concert is null ? Results.NotFound() : Results.Ok(concert);
+    if (concert is null)
+    {
+        return Results.NotFound();
+    }
+
+    // Cross-user access returns 403 to make user isolation explicit for API clients and tests.
+    if (concert.UserProfileId != userProfile.Id)
+    {
+        return Results.Forbid();
+    }
+
+    return Results.Ok(concert.Response);
 })
     .WithName("MeConcert")
     .WithTags("My Concerts");
@@ -508,13 +522,17 @@ app.MapPut("/api/me/concerts/{id:int}", async (
 
     var concert = await db.Concerts
         .Include(existingConcert => existingConcert.Artist)
-        .SingleOrDefaultAsync(existingConcert =>
-            existingConcert.Id == id && existingConcert.UserProfileId == userProfile.Id);
+        .SingleOrDefaultAsync(existingConcert => existingConcert.Id == id);
 
-    // Non-owned ids return 404 to avoid revealing whether another user's concert exists.
     if (concert is null)
     {
         return Results.NotFound();
+    }
+
+    // Cross-user access returns 403 to make user isolation explicit for API clients and tests.
+    if (concert.UserProfileId != userProfile.Id)
+    {
+        return Results.Forbid();
     }
 
     var artist = await FindOrCreateArtistAsync(request.ArtistName, db);
@@ -554,13 +572,17 @@ app.MapDelete("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal princi
     }
 
     var concert = await db.Concerts
-        .SingleOrDefaultAsync(existingConcert =>
-            existingConcert.Id == id && existingConcert.UserProfileId == userProfile.Id);
+        .SingleOrDefaultAsync(existingConcert => existingConcert.Id == id);
 
-    // Non-owned ids return 404 to avoid revealing whether another user's concert exists.
     if (concert is null)
     {
         return Results.NotFound();
+    }
+
+    // Cross-user access returns 403 to make user isolation explicit for API clients and tests.
+    if (concert.UserProfileId != userProfile.Id)
+    {
+        return Results.Forbid();
     }
 
     db.Concerts.Remove(concert);
@@ -704,12 +726,17 @@ app.MapDelete("/api/me/wishlist/{id:int}", async (int id, ClaimsPrincipal princi
     }
 
     var wishlistItem = await db.WishlistItems
-        .SingleOrDefaultAsync(item => item.Id == id && item.UserProfileId == userProfile.Id);
+        .SingleOrDefaultAsync(item => item.Id == id);
 
-    // Non-owned ids return 404 to avoid revealing whether another user's wishlist item exists.
     if (wishlistItem is null)
     {
         return Results.NotFound();
+    }
+
+    // Cross-user access returns 403 to make user isolation explicit for API clients and tests.
+    if (wishlistItem.UserProfileId != userProfile.Id)
+    {
+        return Results.Forbid();
     }
 
     db.WishlistItems.Remove(wishlistItem);

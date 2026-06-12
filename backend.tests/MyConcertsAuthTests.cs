@@ -64,9 +64,9 @@ public sealed class MyConcertsAuthTests : IDisposable
             NewConcert("Updated By Other User"));
         var deleteResponse = await otherClient.DeleteAsync($"/api/me/concerts/{created.Id}");
 
-        Assert.Equal(HttpStatusCode.NotFound, readResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, updateResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, readResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, updateResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, deleteResponse.StatusCode);
 
         var ownerReadResponse = await ownerClient.GetAsync($"/api/me/concerts/{created.Id}");
         Assert.Equal(HttpStatusCode.OK, ownerReadResponse.StatusCode);
