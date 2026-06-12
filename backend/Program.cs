@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using SetlistSocial.Api.Data;
 using SetlistSocial.Api.Development;
@@ -13,7 +12,10 @@ using SetlistSocial.Api.External;
 using SetlistSocial.Api.Hubs;
 using SetlistSocial.Api.Models;
 
+var dotEnvValues = LoadDotEnvFile();
+
 var builder = WebApplication.CreateBuilder(args);
+AddDotEnvConfigurationValues(builder.Configuration, dotEnvValues);
 
 const string FrontendCorsPolicy = "Frontend";
 
@@ -40,7 +42,10 @@ builder.Services.AddCors(options =>
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.ForwardedHeaders =
+    ForwardedHeaders.XForwardedFor |
+    ForwardedHeaders.XForwardedProto |
+    ForwardedHeaders.XForwardedHost;
     options.KnownIPNetworks.Clear();
     options.KnownProxies.Clear();
 });
@@ -89,35 +94,14 @@ builder.Services
     })
     .AddGoogle(options =>
     {
-        options.ClientId = builder.Configuration["Google:ClientId"] ?? string.Empty;
-        options.ClientSecret = builder.Configuration["Google:ClientSecret"] ?? string.Empty;
+        options.ClientId = GetRequiredConfigurationValue(builder.Configuration, "Google:ClientId");
+        options.ClientSecret = GetRequiredConfigurationValue(builder.Configuration, "Google:ClientSecret");
 
         // Keep Google tokens out of the auth cookie; the app only needs identity claims for now.
         options.SaveTokens = false;
 
         // Google handles this internal callback, then redirects to /api/auth/callback.
         options.CallbackPath = "/api/auth/google-callback";
-
-        options.Events.OnRedirectToAuthorizationEndpoint = context =>
-        {
-            var frontendCallbackUri = BuildFrontendGoogleCallbackUri(
-                builder.Configuration["FrontendUrl"],
-                options.CallbackPath);
-
-            if (frontendCallbackUri is null)
-            {
-                context.Response.Redirect(context.RedirectUri);
-                return Task.CompletedTask;
-            }
-
-            var authorizationUri = ReplaceQueryParameter(
-                context.RedirectUri,
-                "redirect_uri",
-                frontendCallbackUri);
-
-            context.Response.Redirect(authorizationUri);
-            return Task.CompletedTask;
-        };
     });
 
 builder.Services.AddAuthorization();
@@ -152,16 +136,8 @@ app.MapHub<ActivityHub>("/hubs/activity");
 
 app.MapGet("/api/auth/login", (IConfiguration configuration) =>
 {
-    var googleClientId = configuration["Google:ClientId"];
-    var googleClientSecret = configuration["Google:ClientSecret"];
-
-    if (string.IsNullOrWhiteSpace(googleClientId) || string.IsNullOrWhiteSpace(googleClientSecret))
-    {
-        return Results.Problem(
-            title: "Google OAuth is not configured.",
-            detail: "Set Google__ClientId and Google__ClientSecret before starting the login flow.",
-            statusCode: StatusCodes.Status503ServiceUnavailable);
-    }
+    _ = GetRequiredConfigurationValue(configuration, "Google:ClientId");
+    _ = GetRequiredConfigurationValue(configuration, "Google:ClientSecret");
 
     return Results.Challenge(
         new AuthenticationProperties { RedirectUri = "/api/auth/callback" },
@@ -1325,37 +1301,108 @@ static List<string> GetAllowedFrontendOrigins(IConfiguration configuration, IHos
     return origins.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 }
 
-static string? BuildFrontendGoogleCallbackUri(string? frontendUrl, PathString callbackPath)
+static IReadOnlyDictionary<string, string> LoadDotEnvFile()
 {
-    if (string.IsNullOrWhiteSpace(frontendUrl)
-        || !Uri.TryCreate(frontendUrl.Trim().TrimEnd('/'), UriKind.Absolute, out var frontendUri))
+    var candidatePaths = new[]
     {
-        return null;
+        Path.Combine(Directory.GetCurrentDirectory(), ".env"),
+        Path.Combine(Directory.GetCurrentDirectory(), "backend", ".env")
+    };
+
+    var envPath = candidatePaths.FirstOrDefault(File.Exists);
+
+    if (envPath is null)
+    {
+        return new Dictionary<string, string>();
     }
 
-    return new Uri(frontendUri, callbackPath.Value ?? "/api/auth/google-callback").ToString();
+    var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+    foreach (var rawLine in File.ReadLines(envPath))
+    {
+        var line = rawLine.Trim();
+
+        if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
+        {
+            continue;
+        }
+
+        if (line.StartsWith("export ", StringComparison.OrdinalIgnoreCase))
+        {
+            line = line["export ".Length..].TrimStart();
+        }
+
+        var separatorIndex = line.IndexOf('=');
+
+        if (separatorIndex <= 0)
+        {
+            continue;
+        }
+
+        var key = line[..separatorIndex].Trim();
+        var value = line[(separatorIndex + 1)..].Trim();
+
+        if (value.Length >= 2
+            && ((value.StartsWith('"') && value.EndsWith('"'))
+                || (value.StartsWith('\'') && value.EndsWith('\''))))
+        {
+            value = value[1..^1];
+        }
+
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            continue;
+        }
+
+        values[key] = value;
+
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(key)))
+        {
+            Environment.SetEnvironmentVariable(key, value);
+        }
+    }
+
+    return values;
 }
 
-static string ReplaceQueryParameter(string uri, string key, string value)
+static void AddDotEnvConfigurationValues(ConfigurationManager configuration, IReadOnlyDictionary<string, string> dotEnvValues)
 {
-    var uriBuilder = new UriBuilder(uri);
-    var queryParameters = QueryHelpers.ParseQuery(uriBuilder.Query)
-        .SelectMany(
-            parameter => parameter.Value,
-            (parameter, parameterValue) => new KeyValuePair<string, string?>(
-                parameter.Key,
-                string.Equals(parameter.Key, key, StringComparison.OrdinalIgnoreCase)
-                    ? value
-                    : parameterValue))
-        .ToList();
-
-    if (!queryParameters.Any(parameter => string.Equals(parameter.Key, key, StringComparison.OrdinalIgnoreCase)))
+    if (dotEnvValues.Count == 0)
     {
-        queryParameters.Add(new KeyValuePair<string, string?>(key, value));
+        return;
     }
 
-    uriBuilder.Query = QueryString.Create(queryParameters).ToUriComponent().TrimStart('?');
-    return uriBuilder.Uri.ToString();
+    var missingConfigurationValues = dotEnvValues
+        .Select(pair => new KeyValuePair<string, string?>(
+            NormalizeDotEnvConfigurationKey(pair.Key),
+            pair.Value))
+        .Where(pair => string.IsNullOrWhiteSpace(configuration[pair.Key]))
+        .ToList();
+
+    if (missingConfigurationValues.Count > 0)
+    {
+        configuration.AddInMemoryCollection(missingConfigurationValues);
+    }
+}
+
+static string NormalizeDotEnvConfigurationKey(string key)
+{
+    return key.Replace("__", ":", StringComparison.Ordinal);
+}
+
+static string GetRequiredConfigurationValue(IConfiguration configuration, string key)
+{
+    var value = configuration[key];
+
+    if (!string.IsNullOrWhiteSpace(value))
+    {
+        return value.Trim();
+    }
+
+    var environmentVariableName = key.Replace(":", "__", StringComparison.Ordinal);
+
+    throw new InvalidOperationException(
+        $"Required configuration value '{key}' is missing or empty. Set '{environmentVariableName}' before starting the backend.");
 }
 
 public sealed record ConcertRequest(
