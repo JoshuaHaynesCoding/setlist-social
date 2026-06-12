@@ -71,6 +71,21 @@ Set these values as environment variables when starting the backend. Do not comm
 - `FrontendUrl`
 - `LastFm__ApiKey`
 
+Create your own Google OAuth client before running local login:
+
+1. In Google Cloud Console, create or select a project.
+2. Configure the OAuth consent screen and add your email as a test user if the app is in testing mode.
+3. Create an OAuth client ID with application type **Web application**.
+4. Add the local authorized redirect URI:
+
+```text
+http://localhost:5050/api/auth/google-callback
+```
+
+5. Copy the generated client ID and client secret into `Google__ClientId` and `Google__ClientSecret` in the startup command below.
+
+Create your own Last.fm API key from the Last.fm API account area, then pass it as `LastFm__ApiKey` in the same startup command.
+
 Local startup example:
 
 ```bash

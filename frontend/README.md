@@ -18,6 +18,13 @@ React + Vite + JavaScript frontend for Setlist Social.
 
 ## Run Frontend And Backend Together
 
+Before starting the backend, create your own local credentials:
+
+- Google OAuth web application client with redirect URI `http://localhost:5050/api/auth/google-callback`.
+- Last.fm API key from the Last.fm API account area.
+
+Pass those values as `Google__ClientId`, `Google__ClientSecret`, and `LastFm__ApiKey` in the backend startup command. Do not commit real values.
+
 From `backend/`, apply migrations and start the API:
 
 ```bash

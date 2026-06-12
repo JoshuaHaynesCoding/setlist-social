@@ -42,7 +42,7 @@ I reviewed AI-assisted tests rather than accepting them as final on the first pa
 
 2. The AI's early documentation overstated or understated the project state in different places. Some docs still said OAuth, EF Core, SignalR, and deployment were planned even after they were implemented. I caught this by comparing the rubric against the repository and updating docs to separate implemented features from real limitations.
 
-3. The AI originally favored a custom dotenv loader. In practice, that was not the standard ASP.NET Core path I wanted, and it introduced confusion around whether secrets were loaded. I removed the custom loader and documented the simpler standard pattern: inject environment variables at process startup locally and through hosting provider dashboards in production.
+3. The AI originally favored a custom .env file loader for enviroment variables. In practice, that was not the standard ASP.NET Core path I wanted, and it introduced confusion around whether secrets were loaded. I removed the custom loader and documented the simpler standard pattern: inject environment variables at process startup locally and through hosting provider dashboards in production.
 
 4. The AI incorrectly assumed Render might still be running with `ASPNETCORE_ENVIRONMENT=Development` and suggested changing it to `Production`, even though Render was already configured for `Production`. That advice did not match the actual deployed state and distracted from the real OAuth issue.
 

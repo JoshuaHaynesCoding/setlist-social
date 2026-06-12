@@ -69,6 +69,37 @@ Frontend:
 | --- | --- |
 | `VITE_API_BASE_URL` | Backend API origin for local development. In deployed Vercel, same-origin rewrites are used. |
 
+## Creating Local API Credentials
+
+Do not use or commit another developer's credentials. To run the full app locally, create your own Google OAuth client and Last.fm API key.
+
+Google OAuth/OIDC:
+
+1. Open Google Cloud Console and create or select a project.
+2. Configure the OAuth consent screen. If the app is in testing mode, add your Google email as a test user.
+3. Create an OAuth client ID with application type **Web application**.
+4. Add this local redirect URI:
+
+```text
+http://localhost:5050/api/auth/google-callback
+```
+
+5. If also testing the deployed Vercel flow, add the deployed callback URI:
+
+```text
+https://setlist-social.vercel.app/api/auth/google-callback
+```
+
+6. Copy the generated client ID and client secret into your local backend startup command as `Google__ClientId` and `Google__ClientSecret`.
+
+Last.fm:
+
+1. Create or sign in to a Last.fm account.
+2. Create an API application/key from the Last.fm API account area.
+3. Copy the API key into your local backend startup command as `LastFm__ApiKey`.
+
+These values are runtime environment variables only. Do not place real values in `README.md`, `appsettings.Development.json`, `.env`, committed scripts, or source code.
+
 ## Local Setup
 
 Install frontend dependencies:
@@ -105,13 +136,31 @@ Useful local URLs:
 - Backend health: `http://localhost:5050/api/health`
 - Swagger UI: `http://localhost:5050/swagger`
 
-## Migrations And Seed Commands
+## Database, Migrations, And Seed Data
 
-Run migrations locally from the repository root:
+Setlist Social uses EF Core for persistence.
+
+Local development uses SQLite by default through `backend/appsettings.Development.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=setlist-social-dev.db"
+  }
+}
+```
+
+The generated SQLite `.db` file is ignored by Git and should not be committed.
+
+Production uses PostgreSQL through the `ConnectionStrings__DefaultConnection` environment variable. The backend chooses the provider from `Database__Provider` when set, otherwise it uses PostgreSQL for production/PostgreSQL-style connection strings and SQLite for local development. Do not put real production connection strings in source control.
+
+To apply EF Core migrations locally, run this from the repository root:
 
 ```bash
 dotnet ef database update --project backend/SetlistSocial.Api.csproj --startup-project backend/SetlistSocial.Api.csproj
 ```
+
+Then start the backend and run one of the development seed commands below.
 
 Small development seed:
 
@@ -119,13 +168,24 @@ Small development seed:
 curl -X POST "http://localhost:5050/api/dev/seed"
 ```
 
-Full-scale development reset/seed:
+Full-scale development seed/reset:
 
 ```bash
 curl -X POST "http://localhost:5050/api/dev/seed/full?reset=true"
 ```
 
-Production migrations can be applied by setting `Database__RunMigrationsOnStartup=true` on Render for a deployment cycle. Production seeding can be applied by setting `Seed__RunOnStartup=true` after migrations, then disabling it after stats show seeded data. Neither production option drops or resets data.
+The small seed creates a few sample users, artists, concerts, reviews, wishlist items, activity events, and tags. The full-scale seed creates deterministic simulated data with 500+ user profiles, 5,000+ domain records, and 10,000+ activity/interactions using curated local artist lists. The full-scale reset option is for local development only.
+
+For production on Render, migrations and seeding are explicit opt-in startup actions:
+
+```text
+Database__RunMigrationsOnStartup=true
+Seed__RunOnStartup=true
+```
+
+`Database__RunMigrationsOnStartup=true` applies EF Core migrations on backend startup. `Seed__RunOnStartup=true` runs the production-safe simulated seed after migrations. Both are disabled by default. Production seeding is idempotent and skips if generated seed/domain data already exists. It does not drop, truncate, reset, or delete production data.
+
+After production stats show seeded data, turn `Seed__RunOnStartup` back off in Render and redeploy/restart. Keep `Database__RunMigrationsOnStartup` off unless intentionally applying migrations for a deployment.
 
 ## Test Commands
 
