@@ -70,16 +70,16 @@ Set these values through environment variables or local user secrets. Do not com
 - `Google__ClientSecret`
 - `FrontendUrl`
 
-For local development, you can also paste values into `backend/.env`. The app loads that file on startup if it exists, and `.env` files are ignored by Git.
+For local development, prefer .NET user secrets:
 
-```env
-Google__ClientId=YOUR_GOOGLE_CLIENT_ID
-Google__ClientSecret=YOUR_GOOGLE_CLIENT_SECRET
-FrontendUrl=http://localhost:5173
-LastFm__ApiKey=YOUR_LASTFM_API_KEY
+```bash
+dotnet user-secrets set "Google:ClientId" "YOUR_GOOGLE_CLIENT_ID"
+dotnet user-secrets set "Google:ClientSecret" "YOUR_GOOGLE_CLIENT_SECRET"
+dotnet user-secrets set "FrontendUrl" "http://localhost:5173"
+dotnet user-secrets set "LastFm:ApiKey" "YOUR_LASTFM_API_KEY"
 ```
 
-Real environment variables still take priority over `backend/.env`, so CI and Render settings are not overwritten by the local file.
+You can also set the same values as environment variables before `dotnet run`.
 
 Local login starts at:
 

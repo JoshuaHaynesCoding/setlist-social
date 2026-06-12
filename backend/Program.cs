@@ -12,10 +12,7 @@ using SetlistSocial.Api.External;
 using SetlistSocial.Api.Hubs;
 using SetlistSocial.Api.Models;
 
-var dotEnvValues = LoadDotEnvFile();
-
 var builder = WebApplication.CreateBuilder(args);
-AddDotEnvConfigurationValues(builder.Configuration, dotEnvValues);
 
 const string FrontendCorsPolicy = "Frontend";
 
@@ -1326,95 +1323,6 @@ static List<string> GetAllowedFrontendOrigins(IConfiguration configuration, IHos
     }
 
     return origins.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-}
-
-static IReadOnlyDictionary<string, string> LoadDotEnvFile()
-{
-    var candidatePaths = new[]
-    {
-        Path.Combine(Directory.GetCurrentDirectory(), ".env"),
-        Path.Combine(Directory.GetCurrentDirectory(), "backend", ".env")
-    };
-
-    var envPath = candidatePaths.FirstOrDefault(File.Exists);
-
-    if (envPath is null)
-    {
-        return new Dictionary<string, string>();
-    }
-
-    var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-    foreach (var rawLine in File.ReadLines(envPath))
-    {
-        var line = rawLine.Trim();
-
-        if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#'))
-        {
-            continue;
-        }
-
-        if (line.StartsWith("export ", StringComparison.OrdinalIgnoreCase))
-        {
-            line = line["export ".Length..].TrimStart();
-        }
-
-        var separatorIndex = line.IndexOf('=');
-
-        if (separatorIndex <= 0)
-        {
-            continue;
-        }
-
-        var key = line[..separatorIndex].Trim();
-        var value = line[(separatorIndex + 1)..].Trim();
-
-        if (value.Length >= 2
-            && ((value.StartsWith('"') && value.EndsWith('"'))
-                || (value.StartsWith('\'') && value.EndsWith('\''))))
-        {
-            value = value[1..^1];
-        }
-
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            continue;
-        }
-
-        values[key] = value;
-
-        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(key)))
-        {
-            Environment.SetEnvironmentVariable(key, value);
-        }
-    }
-
-    return values;
-}
-
-static void AddDotEnvConfigurationValues(ConfigurationManager configuration, IReadOnlyDictionary<string, string> dotEnvValues)
-{
-    if (dotEnvValues.Count == 0)
-    {
-        return;
-    }
-
-    var missingConfigurationValues = dotEnvValues
-        .Select(pair => new KeyValuePair<string, string?>(
-            NormalizeDotEnvConfigurationKey(pair.Key),
-            pair.Value))
-        .Where(pair => string.IsNullOrWhiteSpace(configuration[pair.Key]))
-        .ToList();
-
-    if (missingConfigurationValues.Count > 0)
-    {
-        configuration.AddInMemoryCollection(missingConfigurationValues);
-    }
-}
-
-static string NormalizeDotEnvConfigurationKey(string key)
-{
-    return key.Replace("__", ":", StringComparison.Ordinal);
 }
 
 static string GetRequiredConfigurationValue(IConfiguration configuration, string key)
