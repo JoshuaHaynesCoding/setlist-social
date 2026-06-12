@@ -14,11 +14,11 @@ Initial OAuth/OIDC foundation has started. This is not a complete production sec
 - `GET /api/me` returns the signed-in profile or `401` if unauthenticated.
 - `GET /api/me/dashboard` returns only the current signed-in user's dashboard data or `401` if unauthenticated.
 - `GET/POST/PUT/DELETE /api/me/concerts` endpoints are scoped to the current signed-in user's `UserProfile`.
-- Non-owned concert ids return `404 Not Found` instead of `403 Forbidden` to avoid revealing whether another user's concert exists.
+- Non-owned concert ids return `403 Forbidden` to make cross-user authorization boundaries explicit.
 - `GET/POST/DELETE /api/me/wishlist` endpoints are scoped to the current signed-in user's `UserProfile`.
-- Non-owned wishlist item ids return `404 Not Found` instead of `403 Forbidden` to avoid revealing whether another user's wishlist item exists.
+- Non-owned wishlist item ids return `403 Forbidden` to make cross-user authorization boundaries explicit.
 - Duplicate wishlist saves return `409 Conflict` for the signed-in user's own duplicate artist, without creating another row.
-- Backend integration tests cover unauthenticated `401` responses and My Concerts user isolation with a test-only auth scheme.
+- Backend integration tests cover unauthenticated `401` responses and concert/wishlist user isolation with a test-only auth scheme.
 - The frontend has protected route guards for dashboard/profile/concerts/wishlist/settings placeholder pages.
 - Public endpoints remain public.
 - No secrets are stored in the repository.

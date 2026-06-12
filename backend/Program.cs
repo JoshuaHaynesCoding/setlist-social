@@ -127,7 +127,8 @@ app.UseAuthorization();
 
 app.MapGet("/api/health", () => Results.Ok(new { status = "ok" }))
     .WithName("Health")
-    .WithTags("Health");
+    .WithTags("Health")
+    .Produces(StatusCodes.Status200OK);
 
 app.MapHub<ActivityHub>("/hubs/activity");
 
@@ -141,7 +142,8 @@ app.MapGet("/api/auth/login", (IConfiguration configuration) =>
         [GoogleDefaults.AuthenticationScheme]);
 })
     .WithName("AuthLogin")
-    .WithTags("Auth");
+    .WithTags("Auth")
+    .Produces(StatusCodes.Status302Found);
 
 app.MapGet("/api/auth/callback", async (
     ClaimsPrincipal principal,
@@ -186,7 +188,9 @@ app.MapGet("/api/auth/callback", async (
 })
     .RequireAuthorization()
     .WithName("AuthCallback")
-    .WithTags("Auth");
+    .WithTags("Auth")
+    .Produces(StatusCodes.Status302Found)
+    .Produces(StatusCodes.Status401Unauthorized);
 
 app.MapPost("/api/auth/logout", async (HttpContext context) =>
 {
@@ -194,7 +198,8 @@ app.MapPost("/api/auth/logout", async (HttpContext context) =>
     return Results.Ok(new { status = "signed-out" });
 })
     .WithName("AuthLogout")
-    .WithTags("Auth");
+    .WithTags("Auth")
+    .Produces(StatusCodes.Status200OK);
 
 if ((app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
     && app.Configuration.GetValue<bool>("E2E:EnableTestAuth"))
@@ -286,7 +291,9 @@ app.MapGet("/api/me", async (ClaimsPrincipal principal, AppDbContext db) =>
         : Results.Ok(userProfile);
 })
     .WithName("Me")
-    .WithTags("Auth");
+    .WithTags("Auth")
+    .Produces(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
 app.MapGet("/api/me/dashboard", async (ClaimsPrincipal principal, AppDbContext db) =>
 {
@@ -344,7 +351,9 @@ app.MapGet("/api/me/dashboard", async (ClaimsPrincipal principal, AppDbContext d
     });
 })
     .WithName("MeDashboard")
-    .WithTags("Auth");
+    .WithTags("Auth")
+    .Produces(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
 app.MapGet("/api/me/concerts", async (ClaimsPrincipal principal, AppDbContext db) =>
 {
@@ -376,7 +385,9 @@ app.MapGet("/api/me/concerts", async (ClaimsPrincipal principal, AppDbContext db
         .ToList());
 })
     .WithName("MeConcerts")
-    .WithTags("My Concerts");
+    .WithTags("My Concerts")
+    .Produces<List<ConcertResponse>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
 app.MapGet("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal principal, AppDbContext db) =>
 {
@@ -421,7 +432,11 @@ app.MapGet("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal principal
     return Results.Ok(concert.Response);
 })
     .WithName("MeConcert")
-    .WithTags("My Concerts");
+    .WithTags("My Concerts")
+    .Produces<ConcertResponse>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
+    .Produces(StatusCodes.Status404NotFound);
 
 app.MapPost("/api/me/concerts", async (
     ConcertRequest request,
@@ -495,7 +510,10 @@ app.MapPost("/api/me/concerts", async (
     return Results.Created($"/api/me/concerts/{concert.Id}", response);
 })
     .WithName("CreateMeConcert")
-    .WithTags("My Concerts");
+    .WithTags("My Concerts")
+    .Produces<ConcertResponse>(StatusCodes.Status201Created)
+    .ProducesValidationProblem()
+    .Produces(StatusCodes.Status401Unauthorized);
 
 app.MapPut("/api/me/concerts/{id:int}", async (
     int id,
@@ -557,7 +575,12 @@ app.MapPut("/api/me/concerts/{id:int}", async (
         concert.UpdatedAt));
 })
     .WithName("UpdateMeConcert")
-    .WithTags("My Concerts");
+    .WithTags("My Concerts")
+    .Produces<ConcertResponse>(StatusCodes.Status200OK)
+    .ProducesValidationProblem()
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
+    .Produces(StatusCodes.Status404NotFound);
 
 app.MapDelete("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal principal, AppDbContext db) =>
 {
@@ -588,7 +611,11 @@ app.MapDelete("/api/me/concerts/{id:int}", async (int id, ClaimsPrincipal princi
     return Results.NoContent();
 })
     .WithName("DeleteMeConcert")
-    .WithTags("My Concerts");
+    .WithTags("My Concerts")
+    .Produces(StatusCodes.Status204NoContent)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
+    .Produces(StatusCodes.Status404NotFound);
 
 app.MapGet("/api/me/wishlist", async (ClaimsPrincipal principal, AppDbContext db) =>
 {
@@ -616,7 +643,9 @@ app.MapGet("/api/me/wishlist", async (ClaimsPrincipal principal, AppDbContext db
         .ToList());
 })
     .WithName("MeWishlist")
-    .WithTags("My Wishlist");
+    .WithTags("My Wishlist")
+    .Produces<List<WishlistItemResponse>>(StatusCodes.Status200OK)
+    .Produces(StatusCodes.Status401Unauthorized);
 
 app.MapPost("/api/me/wishlist", async (
     WishlistItemRequest request,
@@ -711,7 +740,11 @@ app.MapPost("/api/me/wishlist", async (
     return Results.Created($"/api/me/wishlist/{wishlistItem.Id}", response);
 })
     .WithName("CreateMeWishlistItem")
-    .WithTags("My Wishlist");
+    .WithTags("My Wishlist")
+    .Produces<WishlistItemResponse>(StatusCodes.Status201Created)
+    .ProducesValidationProblem()
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status409Conflict);
 
 app.MapDelete("/api/me/wishlist/{id:int}", async (int id, ClaimsPrincipal principal, AppDbContext db) =>
 {
@@ -742,7 +775,11 @@ app.MapDelete("/api/me/wishlist/{id:int}", async (int id, ClaimsPrincipal princi
     return Results.NoContent();
 })
     .WithName("DeleteMeWishlistItem")
-    .WithTags("My Wishlist");
+    .WithTags("My Wishlist")
+    .Produces(StatusCodes.Status204NoContent)
+    .Produces(StatusCodes.Status401Unauthorized)
+    .Produces(StatusCodes.Status403Forbidden)
+    .Produces(StatusCodes.Status404NotFound);
 
 app.MapGet("/api/public/stats", async (AppDbContext db) =>
 {
@@ -760,7 +797,8 @@ app.MapGet("/api/public/stats", async (AppDbContext db) =>
     return Results.Ok(stats);
 })
     .WithName("PublicStats")
-    .WithTags("Public");
+    .WithTags("Public")
+    .Produces(StatusCodes.Status200OK);
 
 app.MapGet("/api/external/lastfm/search", async (
     string? artist,
@@ -788,7 +826,10 @@ app.MapGet("/api/external/lastfm/search", async (
     return Results.Ok(results);
 })
     .WithName("LastFmArtistSearch")
-    .WithTags("External");
+    .WithTags("External")
+    .Produces<List<LastFmArtistSearchResult>>(StatusCodes.Status200OK)
+    .ProducesValidationProblem()
+    .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
 
 app.MapGet("/api/public/artists", async (AppDbContext db) =>
 {
@@ -830,7 +871,8 @@ app.MapGet("/api/public/artists", async (AppDbContext db) =>
     return Results.Ok(artistDtos);
 })
     .WithName("PublicArtists")
-    .WithTags("Public");
+    .WithTags("Public")
+    .Produces(StatusCodes.Status200OK);
 
 app.MapGet("/api/public/activity", async (AppDbContext db) =>
 {
@@ -875,7 +917,8 @@ app.MapGet("/api/public/activity", async (AppDbContext db) =>
     return Results.Ok(activityDtos);
 })
     .WithName("PublicActivity")
-    .WithTags("Public");
+    .WithTags("Public")
+    .Produces(StatusCodes.Status200OK);
 
 if (app.Environment.IsDevelopment())
 {

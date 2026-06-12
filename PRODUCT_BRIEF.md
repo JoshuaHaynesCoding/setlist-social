@@ -2,11 +2,11 @@
 
 ## Overview
 
-Setlist Social is a class final project in the Music & Events domain. The planned product will let music fans track concert setlists, connect around live music activity, and see updates from other users.
+Setlist Social is a class final project in the Music & Events domain. The app helps music fans discover artists, save wishlist artists, track concerts they have attended or want to remember, and see public community activity around music events.
 
 ## Problem Statement
 
-Planned: Music fans often discover setlists, artist activity, and event conversation across disconnected services. Setlist Social will explore a focused social experience around concerts, artists, and setlist-related activity.
+Music fans often discover artists, concert activity, and event conversation across disconnected services. Setlist Social provides a focused social experience where users can search artist data, save music interests, record personal concert activity, and watch public activity update in real time.
 
 ## Target Users
 
@@ -16,29 +16,33 @@ Planned: Music fans often discover setlists, artist activity, and event conversa
 
 ## Current Scope
 
-- Minimal React + Vite + JavaScript frontend starter
-- React Router installed and configured
+- React + Vite + JavaScript frontend with React Router
+- Public pages for landing, about, stats, artists, activity, and discovery
+- Protected pages for dashboard, profile, my concerts, wishlist, and settings
+- Google OAuth / OIDC login with backend cookie authentication
+- Signed-in dashboard showing user-owned counts
+- User-owned My Concerts CRUD flow with authorization checks
+- User-owned Wishlist flow connected to artist discovery
+- Public Last.fm artist search through the backend
+- Public stats, artists, and activity endpoints using database data
+- SignalR public activity updates for new user-owned activity
 - ASP.NET Core Minimal API backend targeting .NET 10
 - Swagger/OpenAPI configured
-- Public `GET /api/health` endpoint returning `{ "status": "ok" }`
-- Documentation placeholders created for design, architecture, AI usage, security, and accessibility
+- EF Core persistence with SQLite local development and PostgreSQL production support
+- EF Core migrations and domain relationships for users, artists, concerts, reviews, wishlist items, activity events, and tags
+- Development seed endpoints, including full-scale simulated seed data
+- Backend integration tests, frontend Vitest tests, Playwright E2E tests, and GitHub Actions CI
 
 ## Planned Scope
 
-- Last.fm integration for music data
-- Google OAuth / OIDC authentication
-- EF Core data access
-- SQLite database for local development
-- PostgreSQL database for production
-- SignalR live activity feed
-- Deployment to Vercel, Render, and Neon or Render PostgreSQL
+- Deeper Last.fm features beyond public artist search
+- More complete profile and settings workflows
+- Broader protected CRUD workflows for reviews and richer setlist activity
+- Additional production hardening, monitoring, and security review
 
-## Out Of Scope For Current Starter
+## Out Of Scope For Current Version
 
-- OAuth implementation
-- Database models
-- EF Core setup
-- Last.fm API calls
-- SignalR implementation
-- Production deployment
 - Secrets or environment-specific credentials
+- Direct Last.fm user account/scrobble connections
+- Full recommendation or personalization engine
+- Administrative moderation tools
