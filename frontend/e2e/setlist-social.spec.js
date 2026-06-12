@@ -11,7 +11,7 @@ test('public visitor can load landing, stats, and activity pages', async ({ page
 
   await page.goto('/activity');
   await expect(page.getByRole('heading', { name: /recent public activity/i })).toBeVisible();
-  await expect(page.getByRole('status')).toContainText(/live updates/i);
+  await expect(page.getByRole('status', { name: /live updates/i })).toContainText(/live updates/i);
 });
 
 test('unauthenticated visitor is blocked from protected routes', async ({ page }) => {
