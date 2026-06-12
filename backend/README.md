@@ -9,11 +9,11 @@ ASP.NET Core Minimal API targeting .NET 10.
 - EF Core `AppDbContext`
 - SQLite provider for local development
 - PostgreSQL provider support for production
-- Initial domain models and relationships
+- Domain models and relationships for users, artists, concerts, reviews, wishlist items, activity events, and tags
 - Public stats endpoint: `GET /api/public/stats`
 - Development-only seed endpoint: `POST /api/dev/seed`
 - Development-only full-scale seed/reset endpoint: `POST /api/dev/seed/full?reset=true`
-- Google OAuth/OIDC foundation with cookie authentication
+- Google OAuth/OIDC with cookie authentication
 - Current user endpoint: `GET /api/me`
 - Public Last.fm artist search endpoint: `GET /api/external/lastfm/search?artist=ARTIST_NAME`
 - SignalR public activity hub: `/hubs/activity`
@@ -210,6 +210,6 @@ The generated users are spread across simulated music taste groups:
 
 The seed process does not require external API access. The reset option clears local app/domain data and generated seed users from the development database, while preserving non-generated `UserProfile` rows where possible. Treat reset as a local development operation only.
 
-## Not Implemented Yet
+## Known Limitations
 
-- Full protected CRUD beyond the current My Concerts and Wishlist foundations
+- Full protected review/profile/settings CRUD is not implemented beyond the current My Concerts and Wishlist flows.

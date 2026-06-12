@@ -7,10 +7,9 @@ export default function ProfilePage() {
   return (
     <section className="content-section">
       <p className="eyebrow">Profile</p>
-      <h1>Your profile foundation.</h1>
+      <h1>Your profile.</h1>
       <p className="lede narrow">
-        This protected page confirms the signed-in profile is available. Editing
-        profile details is planned for later.
+        View the profile attached to your Setlist Social session.
       </p>
       <article className="profile-summary">
         <p className="card-kicker">Current profile</p>
@@ -18,8 +17,8 @@ export default function ProfilePage() {
         <p>{profile?.bio ?? 'No bio has been added yet.'}</p>
       </article>
       <EmptyState
-        title="Profile editing is planned"
-        message="This page is intentionally a placeholder until protected profile workflows are added."
+        title="Profile details"
+        message="Your display name and bio appear here when they are available."
       />
     </section>
   );

@@ -1,6 +1,6 @@
 # Setlist Social Frontend
 
-React + Vite + JavaScript public frontend for Setlist Social.
+React + Vite + JavaScript frontend for Setlist Social.
 
 ## Current Routes
 
@@ -10,6 +10,11 @@ React + Vite + JavaScript public frontend for Setlist Social.
 - `/artists` - public artists from the backend
 - `/activity` - recent public activity from the backend with SignalR live updates
 - `/discover` - public Last.fm artist search
+- `/dashboard` - protected current-user dashboard
+- `/profile` - protected profile summary
+- `/my-concerts` - protected user-owned concert CRUD
+- `/wishlist` - protected user-owned wishlist
+- `/settings` - protected account settings area
 
 ## Run Frontend And Backend Together
 
@@ -18,6 +23,12 @@ From `backend/`, apply migrations and start the API:
 ```bash
 dotnet restore
 dotnet ef database update
+ASPNETCORE_ENVIRONMENT=Development \
+ASPNETCORE_URLS=http://localhost:5050 \
+Google__ClientId="YOUR_GOOGLE_CLIENT_ID" \
+Google__ClientSecret="YOUR_GOOGLE_CLIENT_SECRET" \
+FrontendUrl="http://localhost:5173" \
+LastFm__ApiKey="YOUR_LASTFM_API_KEY" \
 dotnet run
 ```
 
@@ -31,7 +42,7 @@ From `frontend/`, install dependencies and start Vite:
 
 ```bash
 npm install
-npm run dev
+VITE_API_BASE_URL="http://localhost:5050" npm run dev
 ```
 
 Run frontend unit tests:
@@ -65,14 +76,16 @@ The public data pages call:
 
 If the backend is not running, these pages show an error state.
 
-The navbar includes a lightweight sign-in control that links to:
+The navbar sign-in control links to:
 
 ```text
 http://localhost:5050/api/auth/login
 ```
 
-## Not Implemented Yet
+In deployed Vercel, API and SignalR traffic use same-origin rewrites from `/api/*` and `/hubs/*` to the Render backend.
+
+## Known Limitations
 
 - Last.fm user account or scrobble integration
-- Production API URL configuration
-- Secrets
+- Full profile/settings editing
+- Review CRUD UI

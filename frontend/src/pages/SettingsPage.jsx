@@ -4,14 +4,13 @@ export default function SettingsPage() {
   return (
     <section className="content-section">
       <p className="eyebrow">Settings</p>
-      <h1>Account settings placeholder.</h1>
+      <h1>Account settings.</h1>
       <p className="lede narrow">
-        This protected route exists as a foundation for future preferences and
-        account controls.
+        Review the account area connected to your signed-in Setlist Social session.
       </p>
       <EmptyState
-        title="Settings are planned"
-        message="Production account settings and preferences are not implemented yet."
+        title="No settings to update"
+        message="Your current account is managed through Google sign-in."
       />
     </section>
   );

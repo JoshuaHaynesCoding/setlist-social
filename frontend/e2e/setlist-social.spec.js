@@ -17,11 +17,8 @@ test('public visitor can load landing, stats, and activity pages', async ({ page
 test('unauthenticated visitor is blocked from protected routes', async ({ page }) => {
   await page.goto('/dashboard');
 
-  await expect(page.getByText('Sign in required')).toBeVisible();
-  await expect(page.getByRole('main').getByRole('link', { name: /sign in with google/i })).toHaveAttribute(
-    'href',
-    `${backendUrl}/api/auth/login`,
-  );
+  await expect(page).toHaveURL('/');
+  await expect(page.getByRole('heading', { name: /track the shows/i })).toBeVisible();
 });
 
 test('signed-in test user can create, refresh, persist, and delete a concert', async ({ page }) => {

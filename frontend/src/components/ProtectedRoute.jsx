@@ -1,12 +1,11 @@
-import { Outlet } from 'react-router-dom';
-import EmptyState from './EmptyState.jsx';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import ErrorState from './ErrorState.jsx';
 import LoadingState from './LoadingState.jsx';
-import { API_BASE_URL } from '../api.js';
 import { useAuth } from '../auth/AuthContext.jsx';
 
 export default function ProtectedRoute() {
   const { status } = useAuth();
+  const location = useLocation();
 
   if (status === 'checking') {
     return <LoadingState message="Checking your session..." />;
@@ -25,15 +24,5 @@ export default function ProtectedRoute() {
     );
   }
 
-  return (
-    <section className="content-section">
-      <EmptyState
-        title="Sign in required"
-        message="Use the Google sign-in button to open this Setlist Social page."
-      />
-      <a className="button primary-button" href={`${API_BASE_URL}/api/auth/login`}>
-        Sign in with Google
-      </a>
-    </section>
-  );
+  return <Navigate to="/" replace state={{ from: location }} />;
 }

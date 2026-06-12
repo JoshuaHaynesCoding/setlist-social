@@ -48,8 +48,8 @@ export default function ArtistsPage() {
       <p className="eyebrow">Artists</p>
       <h1>Artists in the community database.</h1>
       <p className="lede narrow">
-        This public page reads artists from the Setlist Social backend. Last.fm
-        search and richer artist profiles are still planned for later.
+        This public page reads artists from the Setlist Social backend. Use
+        Discover to search Last.fm and save artists to your wishlist.
       </p>
 
       {status === 'loading' ? <LoadingState message="Loading artists..." /> : null}

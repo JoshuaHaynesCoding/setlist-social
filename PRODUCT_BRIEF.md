@@ -31,6 +31,7 @@ Music fans often discover artists, concert activity, and event conversation acro
 - EF Core persistence with SQLite local development and PostgreSQL production support
 - EF Core migrations and domain relationships for users, artists, concerts, reviews, wishlist items, activity events, and tags
 - Development seed endpoints, including full-scale simulated seed data
+- Deployed frontend on Vercel and backend on Render with PostgreSQL production data
 - Backend integration tests, frontend Vitest tests, Playwright E2E tests, and GitHub Actions CI
 
 ## Planned Scope

@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { API_BASE_URL } from '../api.js';
 
 export default function AuthStatus() {
   const { profile, signOut, status } = useAuth();
+  const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleLogout() {
@@ -11,6 +13,7 @@ export default function AuthStatus() {
 
     try {
       await signOut();
+      navigate('/', { replace: true });
     } finally {
       setIsLoggingOut(false);
     }

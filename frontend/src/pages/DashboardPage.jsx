@@ -65,8 +65,7 @@ export default function DashboardPage() {
       <p className="eyebrow">Dashboard</p>
       <h1>Your Setlist Social snapshot.</h1>
       <p className="lede narrow">
-        A small signed-in foundation for your profile, concert activity, reviews,
-        and wishlist counts.
+        See your profile, concert activity, reviews, and wishlist counts in one place.
       </p>
 
       {status === 'loading' ? <LoadingState message="Loading your dashboard..." /> : null}
@@ -84,13 +83,13 @@ export default function DashboardPage() {
           <article className="profile-summary">
             <p className="card-kicker">Signed in as</p>
             <h2>{dashboard.profile.displayName}</h2>
-            <p>{dashboard.profile.bio ?? 'Profile details can be expanded later.'}</p>
+            <p>{dashboard.profile.bio ?? 'No bio has been added yet.'}</p>
           </article>
 
           {!hasAnyCount ? (
             <EmptyState
               title="No personal activity yet"
-              message="Your protected dashboard is working, but this profile does not have concerts, reviews, wishlist items, or activity yet."
+              message="Add a concert or save artists to your wishlist to start filling in your dashboard."
             />
           ) : null}
 

@@ -140,7 +140,7 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Goal: Add the first third-party API integration without exposing secrets.
 - Prompt: Add Last.fm `artist.search` through the backend and a public Discover page that searches artists.
 - Result: Added backend Last.fm client, public search endpoint, frontend `/discover` route, search form, result cards, and setup docs.
-- Accepted: `LastFm:ApiKey` configuration via user-secrets, clean DTOs, missing-key `503` response, and public Last.fm data display.
+- Accepted: `LastFm:ApiKey`/`LastFm__ApiKey` configuration, clean DTOs, missing-key `503` response, and public Last.fm data display.
 - Changed: Added backend external client files, Discover page, navbar route, styles, backend README, architecture doc, and prompt log.
 - Rejected: Last.fm user account/scrobble integration, SignalR, deployment, secrets, wishlist/concert actions from search, and full-scale seed.
 - Tested: `dotnet build` and `npm run build` passed.
@@ -151,7 +151,7 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Goal: Let signed-in users save discovered Last.fm artists to their Setlist Social wishlist.
 - Prompt: Add user-owned wishlist endpoints and connect Discover result cards to the signed-in user's wishlist.
 - Result: Added protected wishlist list/create/delete endpoints, wishlist source metadata, real Wishlist page, and Add to wishlist actions on Discover.
-- Accepted: Current-user-only wishlist data, source name/url, DTOs, validation, and `404` for non-owned wishlist item deletes.
+- Accepted: Current-user-only wishlist data, source name/url, DTOs, validation, and user-owned wishlist isolation.
 - Changed: Updated wishlist model/config/migration, backend endpoints, Discover page, Wishlist page, styles, security review, and prompt log.
 - Rejected: SignalR, deployment, full-scale seed, Last.fm user accounts/scrobbles, secrets, and concert/wishlist bulk actions.
 - Tested: `dotnet build` and `npm run build` passed.
@@ -243,3 +243,47 @@ This file records major AI-assistance sessions for the Setlist Social project. I
 - Changed: Updated backend startup and deployment documentation.
 - Rejected: Secrets, connection strings in code, dropping/resetting production data, OAuth changes, schema changes, and automatic destructive operations.
 - Tested: `dotnet build backend/SetlistSocial.Api.csproj`, `dotnet test backend.tests/SetlistSocial.Api.Tests.csproj`, `npm test`, and `npm run build` passed.
+
+## 2026-06-12 - OAuth Configuration And Sign-Out Cleanup
+
+- Tool: ChatGPT/Codex
+- Goal: Make local/deployed OAuth behavior clearer and improve sign-out UX.
+- Prompt: Remove the custom dotenv loader, use environment-variable startup commands, fail fast when required Google OAuth config is missing, and redirect users home after sign out.
+- Result: Removed dotenv code, documented inline environment variables, replaced empty-string OAuth fallbacks with explicit configuration errors, and changed frontend sign-out/protected-route behavior to return users to `/`.
+- Accepted: Standard ASP.NET Core environment configuration, no secrets in code, clear startup errors, and home redirect after sign-out or expired/deleted session cookie.
+- Changed: Updated `Program.cs`, backend/root README local setup docs, `AuthStatus.jsx`, `ProtectedRoute.jsx`, and frontend tests.
+- Rejected: Printing raw secrets, committing `.env` values, global Google sign-out, and weakening production OAuth.
+- Tested: `dotnet build backend/SetlistSocial.Api.csproj`, `npm test`, and `npm run build` passed.
+
+## 2026-06-12 - Authorization And Backend Polish
+
+- Tool: ChatGPT/Codex
+- Goal: Align backend user isolation and API documentation with the rubric.
+- Prompt: Return `403 Forbidden` for cross-user boundaries, confirm direct API tests, and polish ASP.NET Core Swagger/error metadata without changing behavior.
+- Result: User-owned concert and wishlist cross-user access returns `403`; OpenAPI response metadata documents success, validation, auth, forbidden, not-found, conflict, and service-unavailable cases.
+- Accepted: `403` for cross-user concert read/update/delete and wishlist delete, direct backend isolation tests, and Swagger `.Produces(...)` metadata.
+- Changed: Updated `Program.cs`, backend isolation tests, and security review wording.
+- Rejected: Schema changes, route changes, frontend rewrites, and destructive data operations.
+- Tested: `dotnet build backend/SetlistSocial.Api.csproj` passed; backend tests passed after socket-permission rerun in the local environment.
+
+## 2026-06-12 - Frontend Copy And Accessibility Finalization
+
+- Tool: ChatGPT/Codex
+- Goal: Remove stale placeholder language and document accessibility fixes.
+- Prompt: Clean frontend copy so pages no longer say placeholder/planned/coming soon, keep working behavior, and update accessibility documentation.
+- Result: Profile, Settings, About, Dashboard, and Artists pages use current-state product copy; accessibility report records role/status/nav/logout/live-update/form-label fixes.
+- Accepted: Cleaner user-facing copy, no route or logic changes, and documented final accessibility findings.
+- Changed: Updated frontend page copy and `docs/ACCESSIBILITY_REPORT.md`.
+- Rejected: New product features, UI rewrites, and fake Lighthouse scores.
+- Tested: `npm test` and `npm run build` passed.
+
+## 2026-06-12 - Final Documentation Package
+
+- Tool: ChatGPT/Codex
+- Goal: Bring required project documentation in line with the completed/deployed app.
+- Prompt: Update README, design note, architecture, prompt log, AI reflection, security review, and accessibility report with current features, tests, deployment, CI, and known limitations.
+- Result: Documentation now includes deployed URLs, CI badge, route/endpoint/entity maps, OAuth/security review, dependency audit results, AI reflection, and accessibility findings.
+- Accepted: Accurate current implementation status, deployed Vercel/Render URLs, no secret values, and clear limitations.
+- Changed: Updated root README and all required docs under `docs/`.
+- Rejected: Claims of unsupported Last.fm account/scrobble integration, fake audit scores, fake demo credentials, and hidden security guarantees.
+- Tested: Documentation reviewed against repository files and rubric requirements.

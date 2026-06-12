@@ -43,6 +43,7 @@ function renderProtectedRoute() {
   return render(
     <MemoryRouter initialEntries={['/protected']}>
       <Routes>
+        <Route path="/" element={<p>Home page</p>} />
         <Route element={<ProtectedRoute />}>
           <Route path="/protected" element={<p>Protected child content</p>} />
         </Route>
@@ -56,14 +57,11 @@ describe('ProtectedRoute', () => {
     setAuth({ status: 'signed-out' });
   });
 
-  it('shows sign-in required when unauthenticated', () => {
+  it('redirects home when unauthenticated', () => {
     renderProtectedRoute();
 
-    expect(screen.getByText('Sign in required')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /sign in with google/i })).toHaveAttribute(
-      'href',
-      expectedLoginHref,
-    );
+    expect(screen.getByText('Home page')).toBeInTheDocument();
+    expect(screen.queryByText('Protected child content')).not.toBeInTheDocument();
   });
 
   it('renders children when authenticated', () => {
@@ -79,7 +77,11 @@ describe('AuthStatus', () => {
   it('shows signed-out sign-in state', () => {
     setAuth({ status: 'signed-out' });
 
-    render(<AuthStatus />);
+    render(
+      <MemoryRouter>
+        <AuthStatus />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByRole('link', { name: /sign in with google/i })).toHaveAttribute(
       'href',
@@ -90,7 +92,11 @@ describe('AuthStatus', () => {
   it('shows signed-in display name', () => {
     setAuth({ status: 'signed-in', profile: { displayName: '@sadefiles' } });
 
-    render(<AuthStatus />);
+    render(
+      <MemoryRouter>
+        <AuthStatus />
+      </MemoryRouter>,
+    );
 
     expect(screen.getByText('@sadefiles')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument();
